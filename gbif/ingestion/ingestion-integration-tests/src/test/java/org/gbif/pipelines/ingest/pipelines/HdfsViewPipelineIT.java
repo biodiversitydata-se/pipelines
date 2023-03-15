@@ -10,11 +10,9 @@ import java.util.function.Function;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.beam.sdk.testing.NeedsRunner;
 import org.apache.beam.sdk.testing.TestPipeline;
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.parquet.avro.AvroParquetReader;
 import org.apache.parquet.hadoop.ParquetReader;
-import org.apache.parquet.hadoop.util.HadoopInputFile;
 import org.gbif.api.vocabulary.Extension;
 import org.gbif.dwc.terms.DwcTerm;
 import org.gbif.pipelines.common.PipelinesVariables;
@@ -399,10 +397,7 @@ public class HdfsViewPipelineIT {
   }
 
   private <T extends GenericRecord> void assertFile(String output) throws Exception {
-    try (ParquetReader<T> dataFileReader =
-        AvroParquetReader.<T>builder(
-                HadoopInputFile.fromPath(new Path(output), new Configuration()))
-            .build()) {
+    try (ParquetReader<T> dataFileReader = AvroParquetReader.<T>builder(new Path(output)).build()) {
       T record;
       while (null != (record = dataFileReader.read())) {
         Assert.assertNotNull(record);

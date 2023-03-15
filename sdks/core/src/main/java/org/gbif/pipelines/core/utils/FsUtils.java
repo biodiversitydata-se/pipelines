@@ -37,7 +37,6 @@ import org.apache.avro.file.DataFileReader;
 import org.apache.avro.specific.SpecificDatumReader;
 import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.commons.io.FileUtils;
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.AvroFSInput;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileStatus;
@@ -48,7 +47,6 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.RemoteIterator;
 import org.apache.parquet.avro.AvroParquetReader;
 import org.apache.parquet.hadoop.ParquetReader;
-import org.apache.parquet.hadoop.util.HadoopInputFile;
 import org.gbif.dwc.terms.DwcTerm;
 import org.gbif.dwc.terms.Term;
 import org.gbif.dwc.terms.TermFactory;
@@ -481,9 +479,7 @@ public final class FsUtils {
           try {
             boolean hasNoRecords;
             try (ParquetReader<SpecificRecordBase> dataFileReader =
-                AvroParquetReader.<SpecificRecordBase>builder(
-                        HadoopInputFile.fromPath(path, new Configuration()))
-                    .build()) {
+                AvroParquetReader.<SpecificRecordBase>builder(path).build()) {
               hasNoRecords = dataFileReader.read() == null;
             }
 

@@ -20,7 +20,6 @@ import org.apache.parquet.avro.AvroParquetWriter;
 import org.apache.parquet.hadoop.ParquetFileWriter;
 import org.apache.parquet.hadoop.ParquetWriter;
 import org.apache.parquet.hadoop.metadata.CompressionCodecName;
-import org.apache.parquet.hadoop.util.HadoopOutputFile;
 import org.gbif.pipelines.common.PipelinesException;
 import org.gbif.pipelines.common.PipelinesVariables.Pipeline.Interpretation.InterpretationType;
 import org.gbif.pipelines.common.beam.options.DataWarehousePipelineOptions;
@@ -79,15 +78,17 @@ public class TableRecordWriter<T extends GenericRecord> {
     Configuration hadoopConfiguration =
         FileSystemFactory.getHdfsConfiguration(options.getHdfsSiteConfig());
 
+    hadoopConfiguration.set("parquet.avro.write-old-list-structure", "false");
+
     createParentDirectories(
         HdfsConfigs.create(options.getHdfsSiteConfig(), options.getCoreSiteConfig()), path);
 
-    return AvroParquetWriter.<T>builder(HadoopOutputFile.fromPath(path, hadoopConfiguration))
+    return AvroParquetWriter.<T>builder(path)
         .withCompressionCodec(CompressionCodecName.SNAPPY)
         .withSchema(schema)
         .withDataModel(GenericData.get())
         .withWriteMode(ParquetFileWriter.Mode.OVERWRITE)
-        .config("parquet.avro.write-old-list-structure", "false")
+        .withConf(hadoopConfiguration)
         .build();
   }
 }

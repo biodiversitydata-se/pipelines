@@ -228,6 +228,10 @@
                     <exclude>META-INF/*.SF</exclude>
                     <exclude>META-INF/*.DSA</exclude>
                     <exclude>META-INF/*.RSA</exclude>
+                    <exclude>parquet/**</exclude>
+                    <exclude>scala/**</exclude>
+                    <exclude>webapps/**</exclude>
+                    <exclude>win/**</exclude>
                   </excludes>
                 </filter>
               </filters>
@@ -242,7 +246,7 @@
                   <shadedArtifactAttached>true</shadedArtifactAttached>
                   <shadedClassifierName>shaded</shadedClassifierName>
                   <transformers>
-                    <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+                    <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                   </transformers>
                   <relocations>
                     <!-- Transient from core: conflicts with Beam on Spark -->
@@ -277,6 +281,15 @@
                     <relocation>
                       <pattern>it.unimi.dsi</pattern>
                       <shadedPattern>nameparser.it.unimi.dsi</shadedPattern>
+                    </relocation>
+
+                    <relocation>
+                      <pattern>shaded.parquet</pattern>
+                      <shadedPattern>gbifshaded.parquet</shadedPattern>
+                    </relocation>
+                    <relocation>
+                      <pattern>org.apache.parquet</pattern>
+                      <shadedPattern>gbifshaded.org.apache.parquet</shadedPattern>
                     </relocation>
 
                   </relocations>

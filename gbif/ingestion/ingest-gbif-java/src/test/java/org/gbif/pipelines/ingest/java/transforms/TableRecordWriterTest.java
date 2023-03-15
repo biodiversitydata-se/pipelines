@@ -11,11 +11,9 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
 import org.apache.avro.generic.GenericRecord;
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.parquet.avro.AvroParquetReader;
 import org.apache.parquet.hadoop.ParquetReader;
-import org.apache.parquet.hadoop.util.HadoopInputFile;
 import org.gbif.pipelines.common.PipelinesVariables;
 import org.gbif.pipelines.common.PipelinesVariables.Pipeline.Interpretation.InterpretationType;
 import org.gbif.pipelines.common.beam.options.DataWarehousePipelineOptions;
@@ -102,9 +100,7 @@ public class TableRecordWriterTest {
 
   private <T extends GenericRecord> void assertFile(File result) throws Exception {
     try (ParquetReader<T> dataFileReader =
-        AvroParquetReader.<T>builder(
-                HadoopInputFile.fromPath(new Path(result.toString()), new Configuration()))
-            .build()) {
+        AvroParquetReader.<T>builder(new Path(result.toString())).build()) {
       T record;
       while (null != (record = dataFileReader.read())) {
         Assert.assertNotNull(record);
