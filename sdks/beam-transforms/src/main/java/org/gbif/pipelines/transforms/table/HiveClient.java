@@ -83,6 +83,9 @@ public class HiveClient {
     } catch (Exception ex) {
       if (isPartitionAlreadyExistingError(ex)) {
         alterPartitionLocation(tableName, partitionName, partitionValue, newLocation);
+      } else {
+        log.error("Error updating partition", ex);
+        throw new RuntimeException(ex);
       }
     }
   }

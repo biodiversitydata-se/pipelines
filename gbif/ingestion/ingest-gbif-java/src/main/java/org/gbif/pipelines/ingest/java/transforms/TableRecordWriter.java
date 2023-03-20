@@ -22,7 +22,6 @@ import org.apache.parquet.hadoop.ParquetWriter;
 import org.apache.parquet.hadoop.metadata.CompressionCodecName;
 import org.gbif.pipelines.common.PipelinesException;
 import org.gbif.pipelines.common.PipelinesVariables.Pipeline.Interpretation.InterpretationType;
-import org.gbif.pipelines.common.beam.options.DataWarehousePipelineOptions;
 import org.gbif.pipelines.common.beam.options.InterpretationPipelineOptions;
 import org.gbif.pipelines.core.factory.FileSystemFactory;
 import org.gbif.pipelines.core.pojo.HdfsConfigs;
@@ -33,7 +32,7 @@ import org.gbif.pipelines.transforms.common.CheckTransforms;
 @Slf4j
 public class TableRecordWriter<T extends GenericRecord> {
 
-  @NonNull private final DataWarehousePipelineOptions options;
+  @NonNull private final InterpretationPipelineOptions options;
   @NonNull private final Collection<IdentifierRecord> identifierRecords;
   @NonNull private final Function<IdentifierRecord, List<T>> recordFunction;
   @NonNull private final Function<InterpretationType, String> targetPathFn;

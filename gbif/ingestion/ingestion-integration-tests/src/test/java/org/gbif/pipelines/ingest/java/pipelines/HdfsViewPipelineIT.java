@@ -15,7 +15,7 @@ import org.apache.parquet.hadoop.ParquetReader;
 import org.gbif.api.vocabulary.Extension;
 import org.gbif.dwc.terms.DwcTerm;
 import org.gbif.pipelines.common.PipelinesVariables;
-import org.gbif.pipelines.common.beam.options.DataWarehousePipelineOptions;
+import org.gbif.pipelines.common.beam.options.InterpretationPipelineOptions;
 import org.gbif.pipelines.common.beam.options.PipelinesOptionsFactory;
 import org.gbif.pipelines.core.io.SyncDataFileWriter;
 import org.gbif.pipelines.core.utils.HdfsViewUtils;
@@ -116,8 +116,7 @@ public class HdfsViewPipelineIT {
       "--dwExternalStorePath=/data/hive/"
     };
 
-    DataWarehousePipelineOptions options =
-        PipelinesOptionsFactory.createDataWarehousePipelineInterpretation(args);
+    InterpretationPipelineOptions options = PipelinesOptionsFactory.createInterpretation(args);
     options.setCoreRecordType(recordType); // avoid cph bug
 
     HdfsViewPipeline.run(options);
@@ -196,8 +195,7 @@ public class HdfsViewPipelineIT {
       "--dwExternalStorePath=/data/hive/"
     };
 
-    DataWarehousePipelineOptions options =
-        PipelinesOptionsFactory.createDataWarehousePipelineInterpretation(args);
+    InterpretationPipelineOptions options = PipelinesOptionsFactory.createInterpretation(args);
     options.setCoreRecordType(recordType); // avoid cph bug
 
     HdfsViewPipeline.run(options);
@@ -229,8 +227,8 @@ public class HdfsViewPipelineIT {
       String postfix,
       PipelinesVariables.Pipeline.Interpretation.RecordType recordType) {
 
-    DataWarehousePipelineOptions optionsWriter =
-        PipelinesOptionsFactory.createDataWarehousePipelineInterpretation(argsWriter);
+    InterpretationPipelineOptions optionsWriter =
+        PipelinesOptionsFactory.createInterpretation(argsWriter);
     optionsWriter.setCoreRecordType(recordType); // avoid cph bug
 
     DwcTerm coreTerm = HdfsViewUtils.getCoreTerm(optionsWriter.getCoreRecordType());

@@ -16,7 +16,7 @@ import org.apache.parquet.avro.AvroParquetReader;
 import org.apache.parquet.hadoop.ParquetReader;
 import org.gbif.pipelines.common.PipelinesVariables;
 import org.gbif.pipelines.common.PipelinesVariables.Pipeline.Interpretation.InterpretationType;
-import org.gbif.pipelines.common.beam.options.DataWarehousePipelineOptions;
+import org.gbif.pipelines.common.beam.options.InterpretationPipelineOptions;
 import org.gbif.pipelines.common.beam.options.PipelinesOptionsFactory;
 import org.gbif.pipelines.common.beam.utils.PathBuilder;
 import org.gbif.pipelines.io.avro.IdentifierRecord;
@@ -60,8 +60,7 @@ public class TableRecordWriterTest {
       "--dwConnectionString=jdbc:hive2://localhost:1000/default",
       "--dwExternalStorePath=/data/hive/"
     };
-    DataWarehousePipelineOptions options =
-        PipelinesOptionsFactory.createDataWarehousePipelineInterpretation(args);
+    InterpretationPipelineOptions options = PipelinesOptionsFactory.createInterpretation(args);
 
     Function<InterpretationType, String> pathFn =
         st -> {

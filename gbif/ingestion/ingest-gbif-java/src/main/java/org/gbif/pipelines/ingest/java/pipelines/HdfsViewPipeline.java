@@ -47,7 +47,7 @@ import org.gbif.pipelines.common.PipelinesVariables.Pipeline.Interpretation.Inte
 import org.gbif.pipelines.common.PipelinesVariables.Pipeline.Interpretation.RecordType;
 import org.gbif.pipelines.common.beam.metrics.IngestMetrics;
 import org.gbif.pipelines.common.beam.metrics.MetricsHandler;
-import org.gbif.pipelines.common.beam.options.DataWarehousePipelineOptions;
+import org.gbif.pipelines.common.beam.options.InterpretationPipelineOptions;
 import org.gbif.pipelines.common.beam.options.PipelinesOptionsFactory;
 import org.gbif.pipelines.common.beam.utils.PathBuilder;
 import org.gbif.pipelines.core.converters.AmplificationTableConverter;
@@ -181,12 +181,11 @@ public class HdfsViewPipeline {
   }
 
   public static void run(String[] args) {
-    DataWarehousePipelineOptions options =
-        PipelinesOptionsFactory.createDataWarehousePipelineInterpretation(args);
+    InterpretationPipelineOptions options = PipelinesOptionsFactory.createInterpretation(args);
     run(options);
   }
 
-  public static void run(DataWarehousePipelineOptions options) {
+  public static void run(InterpretationPipelineOptions options) {
     ExecutorService executor = Executors.newWorkStealingPool();
     try {
       run(options, executor);
@@ -196,8 +195,7 @@ public class HdfsViewPipeline {
   }
 
   public static void run(String[] args, ExecutorService executor) {
-    DataWarehousePipelineOptions options =
-        PipelinesOptionsFactory.createDataWarehousePipelineInterpretation(args);
+    InterpretationPipelineOptions options = PipelinesOptionsFactory.createInterpretation(args);
     run(options, executor);
   }
 
@@ -214,7 +212,7 @@ public class HdfsViewPipeline {
   }
 
   @SneakyThrows
-  public static void run(DataWarehousePipelineOptions options, ExecutorService executor) {
+  public static void run(InterpretationPipelineOptions options, ExecutorService executor) {
 
     MDC.put("datasetKey", options.getDatasetId());
     MDC.put("attempt", options.getAttempt().toString());

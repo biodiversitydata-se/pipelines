@@ -16,7 +16,6 @@ import org.apache.parquet.hadoop.ParquetReader;
 import org.gbif.api.vocabulary.Extension;
 import org.gbif.dwc.terms.DwcTerm;
 import org.gbif.pipelines.common.PipelinesVariables;
-import org.gbif.pipelines.common.beam.options.DataWarehousePipelineOptions;
 import org.gbif.pipelines.common.beam.options.InterpretationPipelineOptions;
 import org.gbif.pipelines.common.beam.options.PipelinesOptionsFactory;
 import org.gbif.pipelines.core.io.SyncDataFileWriter;
@@ -198,8 +197,7 @@ public class HdfsViewPipelineIT {
       "--dwConnectionString=jdbc:hive2://localhost:1000/default",
       "--dwExternalStorePath=/data/hive/"
     };
-    DataWarehousePipelineOptions options =
-        PipelinesOptionsFactory.createDataWarehousePipelineInterpretation(args);
+    InterpretationPipelineOptions options = PipelinesOptionsFactory.createInterpretation(args);
     HdfsViewPipeline.run(options, opt -> p);
 
     Function<String, String> outputFn =
@@ -367,8 +365,7 @@ public class HdfsViewPipelineIT {
       "--dwExternalStorePath=/data/hive/"
     };
 
-    DataWarehousePipelineOptions options =
-        PipelinesOptionsFactory.createDataWarehousePipelineInterpretation(args);
+    InterpretationPipelineOptions options = PipelinesOptionsFactory.createInterpretation(args);
     options.setCoreRecordType(recordType);
 
     HdfsViewPipeline.run(options, opt -> p);

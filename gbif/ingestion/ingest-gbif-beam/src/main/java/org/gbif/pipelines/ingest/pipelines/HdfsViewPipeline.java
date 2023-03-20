@@ -49,7 +49,7 @@ import org.apache.beam.sdk.values.TypeDescriptors;
 import org.gbif.dwc.terms.DwcTerm;
 import org.gbif.pipelines.common.PipelinesVariables.Pipeline.Interpretation.RecordType;
 import org.gbif.pipelines.common.beam.metrics.MetricsHandler;
-import org.gbif.pipelines.common.beam.options.DataWarehousePipelineOptions;
+import org.gbif.pipelines.common.beam.options.InterpretationPipelineOptions;
 import org.gbif.pipelines.common.beam.options.PipelinesOptionsFactory;
 import org.gbif.pipelines.common.beam.utils.PathBuilder;
 import org.gbif.pipelines.core.pojo.HdfsConfigs;
@@ -103,6 +103,7 @@ import org.gbif.pipelines.transforms.table.MaterialSampleTableTransform;
 import org.gbif.pipelines.transforms.table.MeasurementOrFactTableTransform;
 import org.gbif.pipelines.transforms.table.MultimediaTableTransform;
 import org.gbif.pipelines.transforms.table.OccurrenceHdfsRecordTransform;
+import org.gbif.pipelines.transforms.table.PartitionedTableTransform;
 import org.gbif.pipelines.transforms.table.PermitTableTransform;
 import org.gbif.pipelines.transforms.table.PreparationTableTransform;
 import org.gbif.pipelines.transforms.table.PreservationTableTransform;
@@ -154,18 +155,17 @@ import org.slf4j.MDC;
 public class HdfsViewPipeline {
 
   public static void main(String[] args) {
-    DataWarehousePipelineOptions options =
-        PipelinesOptionsFactory.createDataWarehousePipelineInterpretation(args);
+    InterpretationPipelineOptions options = PipelinesOptionsFactory.createInterpretation(args);
     HdfsViewPipeline.run(options);
   }
 
-  public static void run(DataWarehousePipelineOptions options) {
+  public static void run(InterpretationPipelineOptions options) {
     run(options, Pipeline::create);
   }
 
   public static void run(
-      DataWarehousePipelineOptions options,
-      Function<DataWarehousePipelineOptions, Pipeline> pipelinesFn) {
+      InterpretationPipelineOptions options,
+      Function<InterpretationPipelineOptions, Pipeline> pipelinesFn) {
 
     HdfsConfigs hdfsConfigs =
         HdfsConfigs.create(options.getHdfsSiteConfig(), options.getCoreSiteConfig());
@@ -608,6 +608,8 @@ public class HdfsViewPipeline {
       }
     }
     log.info("Save metrics into the file and set files owner");
+
+    PartitionedTableTransform.addOrUpdatePartition(options, OccurrenceHdfsRecord.getClassSchema());
 
     MetricsHandler.saveCountersToInputPathFile(options, result.metrics());
     String metadataPath =
