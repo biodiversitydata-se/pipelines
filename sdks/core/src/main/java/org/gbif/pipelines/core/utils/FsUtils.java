@@ -520,6 +520,29 @@ public final class FsUtils {
   }
 
   @SneakyThrows
+  public static boolean isDirectory(FileSystem fs, Path path) {
+    return fs.isDirectory(path);
+  }
+
+  /** Deletes all files and directories that match a pattern except by the keepPath. */
+  @SneakyThrows
+  public static void deleteDirectoriesByPrefixAllExcept(
+      FileSystem fs, Path path, String prefix, String keepDirectory) {
+    log.info(
+        "Deleting by prefix [{}] in path [{}] and keeping directory [{}]",
+        prefix,
+        path,
+        keepDirectory);
+    for (FileStatus dir : fs.listStatus(path, p -> isDirectory(fs, p))) {
+      if (!keepDirectory.equals(dir.getPath().getName())
+          && dir.getPath().getName().startsWith(prefix)) {
+        log.info("Deleting path [{}]", dir.getPath());
+        fs.delete(dir.getPath(), true);
+      }
+    }
+  }
+
+  @SneakyThrows
   public static List<Path> getFilesByExt(FileSystem fs, Path path, String filterExt) {
     RemoteIterator<LocatedFileStatus> files = fs.listFiles(path, false);
     List<Path> paths = new ArrayList<>();

@@ -70,6 +70,7 @@ import org.gbif.pipelines.io.avro.MultimediaRecord;
 import org.gbif.pipelines.io.avro.OccurrenceHdfsRecord;
 import org.gbif.pipelines.io.avro.TaxonRecord;
 import org.gbif.pipelines.io.avro.TemporalRecord;
+import org.gbif.pipelines.io.avro.extension.ac.AudubonTable;
 import org.gbif.pipelines.io.avro.grscicoll.GrscicollRecord;
 import org.gbif.pipelines.transforms.core.BasicTransform;
 import org.gbif.pipelines.transforms.core.EventCoreTransform;
@@ -610,6 +611,8 @@ public class HdfsViewPipeline {
     log.info("Save metrics into the file and set files owner");
 
     PartitionedTableTransform.addOrUpdatePartition(options, OccurrenceHdfsRecord.getClassSchema());
+    PartitionedTableTransform.addOrUpdatePartition(
+        options, AudubonTable.getClassSchema(), AUDUBON_TABLE);
 
     MetricsHandler.saveCountersToInputPathFile(options, result.metrics());
     String metadataPath =
