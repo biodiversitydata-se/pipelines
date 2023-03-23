@@ -1,7 +1,6 @@
 package org.gbif.pipelines.transforms.table;
 
 import com.google.common.reflect.Reflection;
-import java.util.Date;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import lombok.Builder;
@@ -25,7 +24,9 @@ public class PartitionedTableTransform {
 
   private static final String EXT_PACKAGE = "org.gbif.pipelines.io.avro.extension";
 
-  private PipelinesVariables.Pipeline.Interpretation.RecordType recordType;
+  private final PipelinesVariables.Pipeline.Interpretation.RecordType recordType;
+
+  private final String postfix;
 
   private final Schema schema;
 
@@ -39,8 +40,10 @@ public class PartitionedTableTransform {
   public PartitionedTableTransform(
       Schema schema,
       @Nullable PipelinesVariables.Pipeline.Interpretation.RecordType recordType,
+      String postfix,
       InterpretationPipelineOptions options) {
     this.recordType = recordType;
+    this.postfix = postfix;
     this.schema = schema;
     this.hdfsConfigs = HdfsConfigs.create(options.getHdfsSiteConfig(), options.getCoreSiteConfig());
     this.config =
@@ -66,7 +69,9 @@ public class PartitionedTableTransform {
         + "/datasetkey="
         + options.getDatasetId()
         + '_'
-        + new Date().getTime();
+        + options.getAttempt()
+        + '_'
+        + postfix;
   }
 
   /**
@@ -88,19 +93,22 @@ public class PartitionedTableTransform {
         + "*.parquet";
   }
 
-  public static void addOrUpdatePartition(InterpretationPipelineOptions options, Schema schema) {
-    addOrUpdatePartition(options, schema, null);
+  public static void addOrUpdatePartition(
+      InterpretationPipelineOptions options, Schema schema, String partitionPostfix) {
+    addOrUpdatePartition(options, schema, null, partitionPostfix);
   }
 
   public static void addOrUpdatePartition(
       InterpretationPipelineOptions options,
       Schema schema,
-      PipelinesVariables.Pipeline.Interpretation.RecordType extension) {
+      PipelinesVariables.Pipeline.Interpretation.RecordType extension,
+      String partitionPostfix) {
 
     PartitionedTableTransform.builder()
         .recordType(extension)
         .options(options)
         .schema(schema)
+        .postfix(partitionPostfix)
         .build()
         .addOrUpdatePartition();
   }
@@ -127,10 +135,11 @@ public class PartitionedTableTransform {
     return options.getCoreRecordType().name().toLowerCase() + "_ext_" + getTableDirectoryName();
   }
 
-  private void copyDataFiles(String targetPartitionPath) {
+  private void copyDataFiles() {
     PipelinesVariables.Pipeline.Interpretation.RecordType targetRecordType =
         Optional.ofNullable(recordType).orElse(options.getCoreRecordType());
 
+    String targetPartitionPath = getPartitionTargetPath();
     String globPattern = getPartitionSourcePattern(options, targetRecordType);
 
     log.info("Copying files from [{}], to [{}]", globPattern, targetPartitionPath);
@@ -139,7 +148,7 @@ public class PartitionedTableTransform {
 
   public void addOrUpdatePartition() {
     String targetPartitionPath = getPartitionTargetPath();
-    copyDataFiles(targetPartitionPath);
+    copyDataFiles();
     getHiveClient(config.getDataWarehouseConfig())
         .addOrAlterPartition(
             getTableName(), "datasetkey", options.getDatasetId(), targetPartitionPath);

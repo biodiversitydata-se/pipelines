@@ -26,6 +26,7 @@ import static org.gbif.pipelines.common.PipelinesVariables.Pipeline.Interpretati
 import static org.gbif.pipelines.common.PipelinesVariables.Pipeline.Interpretation.RecordType.RESOURCE_RELATIONSHIP_TABLE;
 import static org.gbif.pipelines.common.PipelinesVariables.Pipeline.Interpretation.RecordType.getAllTables;
 
+import java.util.Date;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -610,9 +611,11 @@ public class HdfsViewPipeline {
     }
     log.info("Save metrics into the file and set files owner");
 
-    PartitionedTableTransform.addOrUpdatePartition(options, OccurrenceHdfsRecord.getClassSchema());
+    String partitionPostfix = Long.toString(new Date().getTime());
     PartitionedTableTransform.addOrUpdatePartition(
-        options, AudubonTable.getClassSchema(), AUDUBON_TABLE);
+        options, OccurrenceHdfsRecord.getClassSchema(), partitionPostfix);
+    PartitionedTableTransform.addOrUpdatePartition(
+        options, AudubonTable.getClassSchema(), AUDUBON_TABLE, partitionPostfix);
 
     MetricsHandler.saveCountersToInputPathFile(options, result.metrics());
     String metadataPath =
