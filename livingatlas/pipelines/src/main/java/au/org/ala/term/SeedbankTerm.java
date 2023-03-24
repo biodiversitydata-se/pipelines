@@ -5,31 +5,38 @@ import org.gbif.dwc.terms.Term;
 
 /** Set of terms in use by seedbank */
 public enum SeedbankTerm implements Term {
-  adjustedGermination, // - check numeric
-  darkHours, // - check numeric
-  dateCollected, // - check valid date
-  dateInStorage, // - check valid date
-  dayTemp,
-  lightHours, // - check numeric
-  nightTemp, // - check numeric
-  numberFull, // - check numeric
-  numberGerminated, // - check numeric
-  numberPlantsSampled, // - check numeric
-  purityDebris,
-  sampleSize, // - check numeric
-  sampleWeight, // - check numeric
-  testLengthInDays, // - check numeric
+  accessionNumber,
+  adjustedGerminationPercentage,
+  cultivated,
+  darkHours,
+  dateCollected,
+  dateInStorage,
+  dayTemperatureInCelsius,
+  formInStorage,
+  germinationRateInDays,
+  lightHours,
+  mediaSubstrate,
+  nightTemperatureInCelsius,
+  numberEmpty,
+  numberFull,
+  numberGerminated,
+  numberPlantsSampled,
+  numberTested,
+  plantForm,
+  pretreatment,
+  primaryCollector,
+  primaryStorageSeedBank,
+  purityDebrisPercentage,
+  purityPercentage,
+  relativeHumidityPercentage,
+  sampleSize,
+  sampleWeightInGrams,
+  seedPerGram,
+  storageTemperatureInCelsius,
+  testDateStarted,
+  testLengthInDays,
   thousandSeedWeight,
-  seedPerGram, // - check numeric
-  purity, // - check numeric
-  viability, // - check numeric
-  relativeHumidity, // - check numeric
-  storageTemp, // - check numeric
-  testDateStarted, // - check valid date
-  germinateRate, // - check numeric
-  numberEmpty, // - check numeric
-  numberTested; // - check numeric
-
+  viabilityPercentage;
   private static final URI NS_URI = URI.create("http://REPLACE-ME/terms/");
 
   SeedbankTerm() {}

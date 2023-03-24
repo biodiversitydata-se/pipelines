@@ -23,24 +23,26 @@ public class SeedbankInterpreter {
   private final ExtensionInterpretation.TargetHandler<SeedbankRecord> handler =
       ExtensionInterpretation.extension("http://replace-me/terms/seedbankextension")
           .to(SeedbankRecord::new)
-          .map(SeedbankTerm.adjustedGermination, SeedbankInterpreter::setAdjustedGermination)
+          .map(
+              SeedbankTerm.adjustedGerminationPercentage,
+              SeedbankInterpreter::setAdjustedGermination)
           .map(SeedbankTerm.darkHours, SeedbankInterpreter::setDarkHours)
-          .map(SeedbankTerm.dayTemp, SeedbankInterpreter::setDayTemp)
+          .map(SeedbankTerm.dayTemperatureInCelsius, SeedbankInterpreter::setDayTemp)
           .map(SeedbankTerm.lightHours, SeedbankInterpreter::setLightHours)
           .map(SeedbankTerm.numberFull, SeedbankInterpreter::setNumberFull)
           .map(SeedbankTerm.numberGerminated, SeedbankInterpreter::setNumberGerminated)
           .map(SeedbankTerm.numberPlantsSampled, SeedbankInterpreter::setNumberPlantsSampled)
-          .map(SeedbankTerm.purityDebris, SeedbankInterpreter::setPurityDebris)
+          .map(SeedbankTerm.purityDebrisPercentage, SeedbankInterpreter::setPurityDebris)
           .map(SeedbankTerm.sampleSize, SeedbankInterpreter::setSampleSize)
-          .map(SeedbankTerm.sampleWeight, SeedbankInterpreter::setSampleWeight)
+          .map(SeedbankTerm.sampleWeightInGrams, SeedbankInterpreter::setSampleWeight)
           .map(SeedbankTerm.testLengthInDays, SeedbankInterpreter::setTestLengthInDays)
           .map(SeedbankTerm.thousandSeedWeight, SeedbankInterpreter::setThousandSeedWeight)
           .map(SeedbankTerm.seedPerGram, SeedbankInterpreter::setSeedPerGram)
-          .map(SeedbankTerm.purity, SeedbankInterpreter::setPurity)
-          .map(SeedbankTerm.viability, SeedbankInterpreter::setViability)
-          .map(SeedbankTerm.relativeHumidity, SeedbankInterpreter::setRelativeHumidity)
-          .map(SeedbankTerm.storageTemp, SeedbankInterpreter::setStorageTemp)
-          .map(SeedbankTerm.germinateRate, SeedbankInterpreter::setGerminateRate)
+          .map(SeedbankTerm.purityPercentage, SeedbankInterpreter::setPurity)
+          .map(SeedbankTerm.viabilityPercentage, SeedbankInterpreter::setViability)
+          .map(SeedbankTerm.relativeHumidityPercentage, SeedbankInterpreter::setRelativeHumidity)
+          .map(SeedbankTerm.storageTemperatureInCelsius, SeedbankInterpreter::setStorageTemp)
+          .map(SeedbankTerm.germinationRateInDays, SeedbankInterpreter::setGerminateRate)
           .map(SeedbankTerm.numberEmpty, SeedbankInterpreter::setNumberEmpty)
           .map(SeedbankTerm.numberTested, SeedbankInterpreter::setNumberTested)
           .map(SeedbankTerm.dateInStorage, this::interpretDateInStorage)
@@ -63,7 +65,7 @@ public class SeedbankInterpreter {
 
   public static void setSampleWeight(SeedbankRecord sr, String value) {
     try {
-      sr.setSampleWeight(Double.parseDouble(value));
+      sr.setSampleWeightInGrams(Double.parseDouble(value));
     } catch (Exception e) {
       // do nothing
     }
@@ -79,7 +81,7 @@ public class SeedbankInterpreter {
 
   public static void setAdjustedGermination(SeedbankRecord sr, String value) {
     try {
-      sr.setAdjustedGermination(Double.parseDouble(value));
+      sr.setAdjustedGerminationPercentage(Double.parseDouble(value));
     } catch (Exception e) {
       // do nothing
     }
@@ -95,7 +97,7 @@ public class SeedbankInterpreter {
 
   public static void setDayTemp(SeedbankRecord sr, String value) {
     try {
-      sr.setDayTemp(Double.parseDouble(value));
+      sr.setDayTemperatureInCelsius(Double.parseDouble(value));
     } catch (Exception e) {
       // do nothing
     }
@@ -111,7 +113,7 @@ public class SeedbankInterpreter {
 
   public static void setNightTemp(SeedbankRecord sr, String value) {
     try {
-      sr.setNightTemp(Double.parseDouble(value));
+      sr.setNightTemperatureInCelsius(Double.parseDouble(value));
     } catch (Exception e) {
       // do nothing
     }
@@ -143,7 +145,7 @@ public class SeedbankInterpreter {
 
   public static void setPurityDebris(SeedbankRecord sr, String value) {
     try {
-      sr.setPurityDebris(Double.parseDouble(value));
+      sr.setPurityDebrisPercentage(Double.parseDouble(value));
     } catch (Exception e) {
       // do nothing
     }
@@ -175,7 +177,7 @@ public class SeedbankInterpreter {
 
   public static void setPurity(SeedbankRecord sr, String value) {
     try {
-      sr.setPurity(Double.parseDouble(value));
+      sr.setPurityPercentage(Double.parseDouble(value));
     } catch (Exception e) {
       // do nothing
     }
@@ -183,7 +185,7 @@ public class SeedbankInterpreter {
 
   public static void setViability(SeedbankRecord sr, String value) {
     try {
-      sr.setViability(Double.parseDouble(value));
+      sr.setViabilityPercentage(Double.parseDouble(value));
     } catch (Exception e) {
       // do nothing
     }
@@ -191,7 +193,7 @@ public class SeedbankInterpreter {
 
   public static void setRelativeHumidity(SeedbankRecord sr, String value) {
     try {
-      sr.setRelativeHumidity(Double.parseDouble(value));
+      sr.setRelativeHumidityPercentage(Double.parseDouble(value));
     } catch (Exception e) {
       // do nothing
     }
@@ -199,7 +201,7 @@ public class SeedbankInterpreter {
 
   public static void setStorageTemp(SeedbankRecord sr, String value) {
     try {
-      sr.setStorageTemp(Double.parseDouble(value));
+      sr.setStorageTemperatureInCelsius(Double.parseDouble(value));
     } catch (Exception e) {
       // do nothing
     }
@@ -207,7 +209,7 @@ public class SeedbankInterpreter {
 
   public static void setGerminateRate(SeedbankRecord sr, String value) {
     try {
-      sr.setGerminateRate(Double.parseDouble(value));
+      sr.setGerminationRateInDays(Double.parseDouble(value));
     } catch (Exception e) {
       // do nothing
     }
