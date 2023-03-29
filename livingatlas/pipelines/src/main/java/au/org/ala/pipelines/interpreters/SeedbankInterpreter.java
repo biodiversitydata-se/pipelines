@@ -20,7 +20,7 @@ public class SeedbankInterpreter {
   private final TemporalParser temporalParser;
   private final SerializableFunction<String, String> preprocessDateFn;
 
-  private final ExtensionInterpretation.TargetHandler<SeedbankRecord> handler =
+  public final ExtensionInterpretation.TargetHandler<SeedbankRecord> HANDLER =
       ExtensionInterpretation.extension("http://replace-me/terms/seedbankextension")
           .to(SeedbankRecord::new)
           .map(
@@ -63,8 +63,26 @@ public class SeedbankInterpreter {
   public void interpret(ExtendedRecord er, SeedbankRecord sr) {
     Objects.requireNonNull(er);
     Objects.requireNonNull(sr);
-    ExtensionInterpretation.Result<SeedbankRecord> result = handler.convert(er);
+    ExtensionInterpretation.Result<SeedbankRecord> result = HANDLER.convert(er);
   }
+
+  //  public static BiConsumer<ExtendedRecord, SeedbankRecord> interpret(
+  //          BlastServiceClient client) {
+  //    return (er, ar) -> {
+  //      if (client != null) {
+  //        Objects.requireNonNull(er);
+  //        Objects.requireNonNull(ar);
+  //
+  //        ExtensionInterpretation.Result<SeedbankRecord> result = HANDLER.convert(er);
+  //
+  //        Optional<<Amplification> amplifications = result.get();
+  //        parseAndSetBlast(amplifications, client);
+  //
+  //        ar.setAmplificationItems(amplifications);
+  //        ar.getIssues().setIssueList(result.getIssuesAsList());
+  //      }
+  //    };
+  //  }
 
   public static void setSampleWeight(SeedbankRecord sr, String value) {
     try {

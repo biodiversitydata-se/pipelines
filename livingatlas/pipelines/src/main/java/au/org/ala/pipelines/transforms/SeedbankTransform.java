@@ -14,6 +14,7 @@ import org.apache.beam.sdk.values.TypeDescriptor;
 import org.gbif.common.parsers.date.DateComponentOrdering;
 import org.gbif.pipelines.core.functions.SerializableConsumer;
 import org.gbif.pipelines.core.functions.SerializableFunction;
+import org.gbif.pipelines.core.interpreters.ExtensionInterpretation;
 import org.gbif.pipelines.io.avro.ExtendedRecord;
 import org.gbif.pipelines.io.avro.SeedbankRecord;
 import org.gbif.pipelines.transforms.Transform;
@@ -64,8 +65,10 @@ public class SeedbankTransform extends Transform<ExtendedRecord, SeedbankRecord>
     if (!hasExtension(source, "http://replace-me/terms/seedbankextension")) {
       return Optional.empty();
     }
-    SeedbankRecord sr = SeedbankRecord.newBuilder().setId(source.getId()).build();
-    seedbankInterpreter.interpret(source, sr);
-    return Optional.of(sr);
+    ExtensionInterpretation.Result<SeedbankRecord> sr = seedbankInterpreter.HANDLER.convert(source);
+    if (sr.get().isPresent()) {
+      sr.get().get().setId(source.getId());
+    }
+    return sr.get();
   }
 }
