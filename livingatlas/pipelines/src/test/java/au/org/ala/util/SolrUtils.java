@@ -30,6 +30,14 @@ import org.jetbrains.annotations.NotNull;
 @Slf4j
 public class SolrUtils {
 
+  public static void main(String[] args) throws Exception {
+    System.setProperty("ZK_PORT", "9983");
+    System.setProperty("ZK_HOST", "localhost");
+    System.setProperty("SOLR_PORT", "8988");
+    System.setProperty("SOLR_HOST", "localhost");
+    setupIndex("biocache_annotations");
+  }
+
   public static List<String> getZkHosts() throws Exception {
     return Arrays.asList("localhost:" + System.getProperty("ZK_PORT"));
   }
@@ -39,14 +47,14 @@ public class SolrUtils {
   }
 
   public static void setupIndex(String indexName) throws Exception {
-    try {
-      deleteSolrIndex(indexName);
-    } catch (Exception e) {
-      // expected for new setups
-    }
-    deleteSolrConfigSetIfExists(indexName);
+    //    try {
+    //      deleteSolrIndex(indexName);
+    //    } catch (Exception e) {
+    //      // expected for new setups
+    //    }
+    //    deleteSolrConfigSetIfExists(indexName);
     createSolrConfigSet(indexName);
-    createSolrIndex(indexName);
+    //    createSolrIndex(indexName);
   }
 
   public static void createSolrConfigSet(String indexName) throws Exception {
