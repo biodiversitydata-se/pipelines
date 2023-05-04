@@ -37,7 +37,7 @@ public enum SeedbankTerm implements Term {
   testLengthInDays,
   thousandSeedWeight,
   viabilityPercentage;
-  private static final URI NS_URI = URI.create("http://REPLACE-ME/terms/");
+  private static final URI NS_URI = URI.create("http://ala.org.au/terms/seedbank/0.1/");
 
   SeedbankTerm() {}
 

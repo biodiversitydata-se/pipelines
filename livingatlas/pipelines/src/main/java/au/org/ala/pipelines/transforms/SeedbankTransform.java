@@ -21,6 +21,8 @@ import org.gbif.pipelines.transforms.Transform;
 
 public class SeedbankTransform extends Transform<ExtendedRecord, SeedbankRecord> {
 
+  public static final String SEED_BANK_ROW_TYPE =
+      "http://ala.org.au/terms/seedbank/0.1/SeedbankRecord ";
   private SeedbankInterpreter seedbankInterpreter;
   private List<DateComponentOrdering> orderings;
   private SerializableFunction<String, String> preprocessDateFn;
@@ -62,7 +64,7 @@ public class SeedbankTransform extends Transform<ExtendedRecord, SeedbankRecord>
 
   @Override
   public Optional<SeedbankRecord> convert(ExtendedRecord source) {
-    if (!hasExtension(source, "http://replace-me/terms/seedbankextension")) {
+    if (!hasExtension(source, SEED_BANK_ROW_TYPE)) {
       return Optional.empty();
     }
     ExtensionInterpretation.Result<SeedbankRecord> sr = seedbankInterpreter.HANDLER.convert(source);
