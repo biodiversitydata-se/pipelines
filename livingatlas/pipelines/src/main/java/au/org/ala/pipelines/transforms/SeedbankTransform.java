@@ -22,7 +22,7 @@ import org.gbif.pipelines.transforms.Transform;
 public class SeedbankTransform extends Transform<ExtendedRecord, SeedbankRecord> {
 
   public static final String SEED_BANK_ROW_TYPE =
-      "http://ala.org.au/terms/seedbank/0.1/SeedbankRecord ";
+      "http://ala.org.au/terms/seedbank/0.1/SeedbankRecord";
   private SeedbankInterpreter seedbankInterpreter;
   private List<DateComponentOrdering> orderings;
   private SerializableFunction<String, String> preprocessDateFn;
