@@ -1,5 +1,7 @@
 package au.org.ala.pipelines.interpreters;
 
+import static au.org.ala.pipelines.transforms.SeedbankTransform.SEED_BANK_ROW_TYPE;
+
 import au.org.ala.term.SeedbankTerm;
 import java.time.temporal.TemporalAccessor;
 import java.util.List;
@@ -21,7 +23,7 @@ public class SeedbankInterpreter {
   private final SerializableFunction<String, String> preprocessDateFn;
 
   public final ExtensionInterpretation.TargetHandler<SeedbankRecord> HANDLER =
-      ExtensionInterpretation.extension("http://replace-me/terms/seedbankextension")
+      ExtensionInterpretation.extension(SEED_BANK_ROW_TYPE)
           .to(SeedbankRecord::new)
           .map(
               SeedbankTerm.adjustedGerminationPercentage,
@@ -65,24 +67,6 @@ public class SeedbankInterpreter {
     Objects.requireNonNull(sr);
     ExtensionInterpretation.Result<SeedbankRecord> result = HANDLER.convert(er);
   }
-
-  //  public static BiConsumer<ExtendedRecord, SeedbankRecord> interpret(
-  //          BlastServiceClient client) {
-  //    return (er, ar) -> {
-  //      if (client != null) {
-  //        Objects.requireNonNull(er);
-  //        Objects.requireNonNull(ar);
-  //
-  //        ExtensionInterpretation.Result<SeedbankRecord> result = HANDLER.convert(er);
-  //
-  //        Optional<<Amplification> amplifications = result.get();
-  //        parseAndSetBlast(amplifications, client);
-  //
-  //        ar.setAmplificationItems(amplifications);
-  //        ar.getIssues().setIssueList(result.getIssuesAsList());
-  //      }
-  //    };
-  //  }
 
   public static void setSampleWeight(SeedbankRecord sr, String value) {
     try {
