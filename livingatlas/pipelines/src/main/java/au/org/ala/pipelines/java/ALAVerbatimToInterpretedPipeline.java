@@ -305,6 +305,8 @@ public class ALAVerbatimToInterpretedPipeline {
     log.info("Creating writers");
     try (SyncDataFileWriter<ExtendedRecord> verbatimWriter =
             createWriter(options, ExtendedRecord.getClassSchema(), verbatimTransform, id);
+        SyncDataFileWriter<ALAMetadataRecord> metadataWriter =
+            createWriter(options, ALAMetadataRecord.getClassSchema(), metadataTransform, id);
         SyncDataFileWriter<BasicRecord> basicWriter =
             createWriter(options, BasicRecord.getClassSchema(), basicTransform, id);
         SyncDataFileWriter<TemporalRecord> temporalWriter =
@@ -341,6 +343,9 @@ public class ALAVerbatimToInterpretedPipeline {
       Consumer<ExtendedRecord> interpretAllFn =
           er -> {
             verbatimWriter.append(er);
+            metadataTransform
+                .processElement(options.getDatasetId())
+                .ifPresent(metadataWriter::append);
             basicTransform.processElement(er).ifPresent(basicWriter::append);
             temporalTransform.processElement(er).ifPresent(temporalWriter::append);
             multimediaTransform.processElement(er).ifPresent(multimediaWriter::append);
