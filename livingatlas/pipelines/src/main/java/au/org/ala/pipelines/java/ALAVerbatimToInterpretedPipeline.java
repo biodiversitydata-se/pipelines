@@ -137,7 +137,7 @@ public class ALAVerbatimToInterpretedPipeline {
 
   public static void run(String[] args) {
     ALAInterpretationPipelineOptions options =
-        PipelinesOptionsFactory.create(ALAInterpretationPipelineOptions.class, args);
+            PipelinesOptionsFactory.create(ALAInterpretationPipelineOptions.class, args);
     options.setMetaFileName(ValidationUtils.INTERPRETATION_METRICS);
     run(options);
   }
@@ -153,7 +153,7 @@ public class ALAVerbatimToInterpretedPipeline {
 
   public static void run(String[] args, ExecutorService executor) {
     ALAInterpretationPipelineOptions options =
-        PipelinesOptionsFactory.create(ALAInterpretationPipelineOptions.class, args);
+            PipelinesOptionsFactory.create(ALAInterpretationPipelineOptions.class, args);
     run(options, executor);
   }
 
@@ -165,31 +165,31 @@ public class ALAVerbatimToInterpretedPipeline {
       log.warn("Verbatim AVRO not available for {}", options.getDatasetId());
       return;
     }
-
+    String postfix = Long.toString(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));
     String datasetId = options.getDatasetId();
     Integer attempt = options.getAttempt();
     Set<String> types = Collections.singleton(ALL.name());
     String targetPath = options.getTargetPath();
     HdfsConfigs hdfsConfigs =
-        HdfsConfigs.create(options.getHdfsSiteConfig(), options.getCoreSiteConfig());
+            HdfsConfigs.create(options.getHdfsSiteConfig(), options.getCoreSiteConfig());
 
     ALAPipelinesConfig config =
-        ALAPipelinesConfigFactory.getInstance(hdfsConfigs, options.getProperties()).get();
+            ALAPipelinesConfigFactory.getInstance(hdfsConfigs, options.getProperties()).get();
 
     // check collectory metadata available
     ALACollectoryMetadata m =
-        ALAAttributionKVStoreFactory.create(config).get(options.getDatasetId());
+            ALAAttributionKVStoreFactory.create(config).get(options.getDatasetId());
     if (Objects.equals(m, ALACollectoryMetadata.EMPTY)) {
       log.error(
-          "Collectory metadata no available for {}. Will not run interpretation",
-          options.getDatasetId());
+              "Collectory metadata no available for {}. Will not run interpretation",
+              options.getDatasetId());
       return;
     }
 
     List<DateComponentOrdering> dateComponentOrdering =
-        options.getDefaultDateFormat() == null
-            ? config.getGbifConfig().getDefaultDateFormat()
-            : options.getDefaultDateFormat();
+            options.getDefaultDateFormat() == null
+                    ? config.getGbifConfig().getDefaultDateFormat()
+                    : options.getDefaultDateFormat();
 
     FsUtils.deleteInterpretIfExist(hdfsConfigs, targetPath, datasetId, attempt, CORE_TERM, types);
 
@@ -207,93 +207,96 @@ public class ALAVerbatimToInterpretedPipeline {
 
     // Core
     ALABasicTransform basicTransform =
-        ALABasicTransform.builder()
-            .vocabularyServiceSupplier(
-                config.getGbifConfig().getVocabularyConfig() != null
-                    ? FileVocabularyFactory.builder()
-                        .config(config.getGbifConfig())
-                        .hdfsConfigs(hdfsConfigs)
-                        .build()
-                        .getInstanceSupplier()
-                    : null)
-            .recordedByKvStoreSupplier(RecordedByKVStoreFactory.getInstanceSupplier(config))
-            .occStatusKvStoreSupplier(
-                OccurrenceStatusKvStoreFactory.getInstanceSupplier(config.getGbifConfig()))
-            .create()
-            .counterFn(incMetricFn);
+            ALABasicTransform.builder()
+                    .vocabularyServiceSupplier(
+                            config.getGbifConfig().getVocabularyConfig() != null
+                                    ? FileVocabularyFactory.builder()
+                                    .config(config.getGbifConfig())
+                                    .hdfsConfigs(hdfsConfigs)
+                                    .build()
+                                    .getInstanceSupplier()
+                                    : null)
+                    .recordedByKvStoreSupplier(RecordedByKVStoreFactory.getInstanceSupplier(config))
+                    .occStatusKvStoreSupplier(
+                            OccurrenceStatusKvStoreFactory.getInstanceSupplier(config.getGbifConfig()))
+                    .create()
+                    .counterFn(incMetricFn);
 
     VerbatimTransform verbatimTransform = VerbatimTransform.create().counterFn(incMetricFn);
     ALATemporalTransform temporalTransform =
-        ALATemporalTransform.builder()
-            .orderings(dateComponentOrdering)
-            .create()
-            .counterFn(incMetricFn);
+            ALATemporalTransform.builder()
+                    .orderings(dateComponentOrdering)
+                    .create()
+                    .counterFn(incMetricFn);
 
     MultimediaTransform multimediaTransform =
-        MultimediaTransform.builder()
-            .orderings(dateComponentOrdering)
-            .create()
-            .counterFn(incMetricFn);
+            MultimediaTransform.builder()
+                    .orderings(dateComponentOrdering)
+                    .create()
+                    .counterFn(incMetricFn);
     // Extra
     OccurrenceExtensionTransform occExtensionTransform =
-        OccurrenceExtensionTransform.create().counterFn(incMetricFn);
+            OccurrenceExtensionTransform.create().counterFn(incMetricFn);
 
     // Collectory metadata
     ALAMetadataTransform metadataTransform =
-        ALAMetadataTransform.builder()
-            .dataResourceKvStoreSupplier(ALAAttributionKVStoreFactory.getInstanceSupplier(config))
-            .datasetId(datasetId)
-            .create();
+            ALAMetadataTransform.builder()
+                    .dataResourceKvStoreSupplier(ALAAttributionKVStoreFactory.getInstanceSupplier(config))
+                    .datasetId(datasetId)
+                    .create();
     metadataTransform.setup();
 
     // add measurement or facts...
     MeasurementOrFactTransform measurementOrFactTransform =
-        MeasurementOrFactTransform.builder().create();
+            MeasurementOrFactTransform.builder().create();
 
     Optional<ALAMetadataRecord> result = metadataTransform.processElement(options.getDatasetId());
     ALAMetadataRecord mdr;
     if (result.isPresent()) {
       mdr = result.get();
+      SyncDataFileWriter metadataWriter =
+              createWriter(options, ALAMetadataRecord.getClassSchema(), metadataTransform, postfix);
+      metadataWriter.append(mdr);
     } else {
       throw new PipelinesException(
-          "Unable to retrieve metadata from collectory for datasetId:" + datasetId);
+              "Unable to retrieve metadata from collectory for datasetId:" + datasetId);
     }
 
     // ALA specific - Attribution
     ALAAttributionTransform alaAttributionTransform =
-        ALAAttributionTransform.builder()
-            .collectionKvStoreSupplier(ALACollectionKVStoreFactory.getInstanceSupplier(config))
-            .create();
+            ALAAttributionTransform.builder()
+                    .collectionKvStoreSupplier(ALACollectionKVStoreFactory.getInstanceSupplier(config))
+                    .create();
 
     // ALA specific - Taxonomy
     ALATaxonomyTransform alaTaxonomyTransform =
-        ALATaxonomyTransform.builder()
-            .datasetId(datasetId)
-            .nameMatchStoreSupplier(ALANameMatchKVStoreFactory.getInstanceSupplier(config))
-            .kingdomCheckStoreSupplier(
-                ALANameCheckKVStoreFactory.getInstanceSupplier("kingdom", config))
-            .dataResourceStoreSupplier(ALAAttributionKVStoreFactory.getInstanceSupplier(config))
-            .alaNameMatchConfig(
-                config.getAlaNameMatchConfig() != null
-                    ? config.getAlaNameMatchConfig()
-                    : new ALANameMatchConfig())
-            .create();
+            ALATaxonomyTransform.builder()
+                    .datasetId(datasetId)
+                    .nameMatchStoreSupplier(ALANameMatchKVStoreFactory.getInstanceSupplier(config))
+                    .kingdomCheckStoreSupplier(
+                            ALANameCheckKVStoreFactory.getInstanceSupplier("kingdom", config))
+                    .dataResourceStoreSupplier(ALAAttributionKVStoreFactory.getInstanceSupplier(config))
+                    .alaNameMatchConfig(
+                            config.getAlaNameMatchConfig() != null
+                                    ? config.getAlaNameMatchConfig()
+                                    : new ALANameMatchConfig())
+                    .create();
 
     // ALA specific - Location
     LocationTransform locationTransform =
-        LocationTransform.builder()
-            .alaConfig(config)
-            .countryKvStoreSupplier(GeocodeKvStoreFactory.createCountrySupplier(config))
-            .stateProvinceKvStoreSupplier(GeocodeKvStoreFactory.createStateProvinceSupplier(config))
-            .biomeKvStoreSupplier(GeocodeKvStoreFactory.createBiomeSupplier(config))
-            .create();
+            LocationTransform.builder()
+                    .alaConfig(config)
+                    .countryKvStoreSupplier(GeocodeKvStoreFactory.createCountrySupplier(config))
+                    .stateProvinceKvStoreSupplier(GeocodeKvStoreFactory.createStateProvinceSupplier(config))
+                    .biomeKvStoreSupplier(GeocodeKvStoreFactory.createBiomeSupplier(config))
+                    .create();
 
     // ALA specific - Default values
     ALADefaultValuesTransform alaDefaultValuesTransform =
-        ALADefaultValuesTransform.builder()
-            .datasetId(datasetId)
-            .dataResourceKvStoreSupplier(ALAAttributionKVStoreFactory.getInstanceSupplier(config))
-            .create();
+            ALADefaultValuesTransform.builder()
+                    .datasetId(datasetId)
+                    .dataResourceKvStoreSupplier(ALAAttributionKVStoreFactory.getInstanceSupplier(config))
+                    .create();
 
     basicTransform.setup();
     temporalTransform.setup();
@@ -304,33 +307,31 @@ public class ALAVerbatimToInterpretedPipeline {
 
     log.info("Creating writers");
     try (SyncDataFileWriter<ExtendedRecord> verbatimWriter =
-            createWriter(options, ExtendedRecord.getClassSchema(), verbatimTransform, id);
-        SyncDataFileWriter<ALAMetadataRecord> metadataWriter =
-            createWriter(options, ALAMetadataRecord.getClassSchema(), metadataTransform, id);
-        SyncDataFileWriter<BasicRecord> basicWriter =
-            createWriter(options, BasicRecord.getClassSchema(), basicTransform, id);
-        SyncDataFileWriter<TemporalRecord> temporalWriter =
-            createWriter(options, TemporalRecord.getClassSchema(), temporalTransform, id);
-        SyncDataFileWriter<MultimediaRecord> multimediaWriter =
-            createWriter(options, MultimediaRecord.getClassSchema(), multimediaTransform, id);
-        SyncDataFileWriter<MeasurementOrFactRecord> measurementOrFactWriter =
-            createWriter(
-                options, MeasurementOrFactRecord.getClassSchema(), measurementOrFactTransform, id);
-        // ALA specific
-        SyncDataFileWriter<LocationRecord> locationWriter =
-            createWriter(options, LocationRecord.getClassSchema(), locationTransform, id);
-        SyncDataFileWriter<ALATaxonRecord> alaTaxonWriter =
-            createWriter(options, ALATaxonRecord.getClassSchema(), alaTaxonomyTransform, id);
-        SyncDataFileWriter<ALAAttributionRecord> alaAttributionWriter =
-            createWriter(
-                options, ALAAttributionRecord.getClassSchema(), alaAttributionTransform, id)) {
+                 createWriter(options, ExtendedRecord.getClassSchema(), verbatimTransform, id);
+         SyncDataFileWriter<BasicRecord> basicWriter =
+                 createWriter(options, BasicRecord.getClassSchema(), basicTransform, id);
+         SyncDataFileWriter<TemporalRecord> temporalWriter =
+                 createWriter(options, TemporalRecord.getClassSchema(), temporalTransform, id);
+         SyncDataFileWriter<MultimediaRecord> multimediaWriter =
+                 createWriter(options, MultimediaRecord.getClassSchema(), multimediaTransform, id);
+         SyncDataFileWriter<MeasurementOrFactRecord> measurementOrFactWriter =
+                 createWriter(
+                         options, MeasurementOrFactRecord.getClassSchema(), measurementOrFactTransform, id);
+         // ALA specific
+         SyncDataFileWriter<LocationRecord> locationWriter =
+                 createWriter(options, LocationRecord.getClassSchema(), locationTransform, id);
+         SyncDataFileWriter<ALATaxonRecord> alaTaxonWriter =
+                 createWriter(options, ALATaxonRecord.getClassSchema(), alaTaxonomyTransform, id);
+         SyncDataFileWriter<ALAAttributionRecord> alaAttributionWriter =
+                 createWriter(
+                         options, ALAAttributionRecord.getClassSchema(), alaAttributionTransform, id)) {
 
       log.info("Creating metadata record");
 
       // Read DWCA and replace default values
       log.info("Reading Verbatim into erMap");
       Map<String, ExtendedRecord> erMap =
-          AvroReader.readUniqueRecords(hdfsConfigs, ExtendedRecord.class, options.getInputPath());
+              AvroReader.readUniqueRecords(hdfsConfigs, ExtendedRecord.class, options.getInputPath());
 
       log.info("Reading DwcA - extension transform");
       Map<String, ExtendedRecord> erExtMap = occExtensionTransform.transform(erMap);
@@ -341,22 +342,19 @@ public class ALAVerbatimToInterpretedPipeline {
       // Create interpretation function
       log.info("Create interpretation function");
       Consumer<ExtendedRecord> interpretAllFn =
-          er -> {
-            verbatimWriter.append(er);
-            metadataTransform
-                .processElement(options.getDatasetId())
-                .ifPresent(metadataWriter::append);
-            basicTransform.processElement(er).ifPresent(basicWriter::append);
-            temporalTransform.processElement(er).ifPresent(temporalWriter::append);
-            multimediaTransform.processElement(er).ifPresent(multimediaWriter::append);
-            // ALA specific
-            locationTransform.processElement(er).ifPresent(locationWriter::append);
-            alaTaxonomyTransform.processElement(er).ifPresent(alaTaxonWriter::append);
-            alaAttributionTransform.processElement(er, mdr).ifPresent(alaAttributionWriter::append);
-            measurementOrFactTransform
-                .processElement(er)
-                .ifPresent(measurementOrFactWriter::append);
-          };
+              er -> {
+                verbatimWriter.append(er);
+                basicTransform.processElement(er).ifPresent(basicWriter::append);
+                temporalTransform.processElement(er).ifPresent(temporalWriter::append);
+                multimediaTransform.processElement(er).ifPresent(multimediaWriter::append);
+                // ALA specific
+                locationTransform.processElement(er).ifPresent(locationWriter::append);
+                alaTaxonomyTransform.processElement(er).ifPresent(alaTaxonWriter::append);
+                alaAttributionTransform.processElement(er, mdr).ifPresent(alaAttributionWriter::append);
+                measurementOrFactTransform
+                        .processElement(er)
+                        .ifPresent(measurementOrFactWriter::append);
+              };
 
       // Run async interpretation and writing for all records
       log.info("Run async writing for all records");
@@ -364,12 +362,12 @@ public class ALAVerbatimToInterpretedPipeline {
       Collection<ExtendedRecord> erCollection = erExtMap.values();
       if (useSyncMode) {
         streamAll =
-            Stream.of(
-                CompletableFuture.runAsync(() -> erCollection.forEach(interpretAllFn), executor));
+                Stream.of(
+                        CompletableFuture.runAsync(() -> erCollection.forEach(interpretAllFn), executor));
       } else {
         streamAll =
-            erCollection.stream()
-                .map(v -> CompletableFuture.runAsync(() -> interpretAllFn.accept(v), executor));
+                erCollection.stream()
+                        .map(v -> CompletableFuture.runAsync(() -> interpretAllFn.accept(v), executor));
       }
 
       // Wait for all features
@@ -391,8 +389,8 @@ public class ALAVerbatimToInterpretedPipeline {
     log.info("Pipeline has been finished - " + LocalDateTime.now());
 
     if (options instanceof ALAInterpretationPipelineOptions
-        && ((ALAInterpretationPipelineOptions) options).isEventsEnabled()
-        && ArchiveUtils.isEventCore(options)) {
+            && ((ALAInterpretationPipelineOptions) options).isEventsEnabled()
+            && ArchiveUtils.isEventCore(options)) {
       log.info("Running events pipeline");
       ALAVerbatimToEventPipeline.run(options);
     }
@@ -401,23 +399,23 @@ public class ALAVerbatimToInterpretedPipeline {
   /** Create an AVRO file writer */
   @SneakyThrows
   private static <T> SyncDataFileWriter<T> createWriter(
-      InterpretationPipelineOptions options, Schema schema, Transform transform, String id) {
+          InterpretationPipelineOptions options, Schema schema, Transform transform, String id) {
     UnaryOperator<String> pathFn =
-        t ->
-            PathBuilder.buildPathInterpretUsingTargetPath(
-                options, CORE_TERM, t, id + AVRO_EXTENSION);
+            t ->
+                    PathBuilder.buildPathInterpretUsingTargetPath(
+                            options, CORE_TERM, t, id + AVRO_EXTENSION);
     Path path = new Path(pathFn.apply(transform.getBaseName()));
     FileSystem fs =
-        FileSystemFactory.getInstance(HdfsConfigs.create(options.getHdfsSiteConfig(), null))
-            .getFs(path.toString());
+            FileSystemFactory.getInstance(HdfsConfigs.create(options.getHdfsSiteConfig(), null))
+                    .getFs(path.toString());
     fs.mkdirs(path.getParent());
 
     return SyncDataFileWriterBuilder.builder()
-        .schema(schema)
-        .codec(options.getAvroCompressionType())
-        .outputStream(fs.create(path))
-        .syncInterval(options.getAvroSyncInterval())
-        .build()
-        .createSyncDataFileWriter();
+            .schema(schema)
+            .codec(options.getAvroCompressionType())
+            .outputStream(fs.create(path))
+            .syncInterval(options.getAvroSyncInterval())
+            .build()
+            .createSyncDataFileWriter();
   }
 }
