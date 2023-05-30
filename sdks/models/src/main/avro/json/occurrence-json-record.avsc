@@ -102,6 +102,7 @@
       {"name":"decimalLatitude","type":["null","double"],"default":null,"doc":""},
       {"name":"decimalLongitude","type":["null","double"],"default":null,"doc":""},
       {"name":"gadm","type":["null","GadmFeatures"],"default":null,"doc":""},
+      {"name":"wdpaId","type":{"type":"array","items":"string"},"default":null,"doc":""},
       {"name":"hasCoordinate","type":["null","boolean"],"default":null,"doc":""},
       {"name":"repatriated","type":["null","boolean"],"default":null,"doc":""},
       {"name":"hasGeospatialIssue","type":["null","boolean"],"default":null,"doc":""},

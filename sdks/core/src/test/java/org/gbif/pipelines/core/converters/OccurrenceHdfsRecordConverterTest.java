@@ -623,6 +623,7 @@ public class OccurrenceHdfsRecordConverterTest {
             .setMaximumElevationInMeters(0.1)
             .setMinimumElevationInMeters(0.1)
             .setDistanceFromCentroidInMeters(10.0)
+            .setWdpaId(Arrays.asList("1", "2"))
             .build();
 
     // When
@@ -646,6 +647,9 @@ public class OccurrenceHdfsRecordConverterTest {
     Assert.assertEquals("Limon", hdfsRecord.getStateprovince());
     Assert.assertEquals("Atlantic", hdfsRecord.getWaterbody());
     Assert.assertEquals(Double.valueOf(10.0d), hdfsRecord.getDistancefromcentroidinmeters());
+    Assert.assertEquals(2, hdfsRecord.getWdpaid().size());
+    Assert.assertTrue(hdfsRecord.getWdpaid().contains("1"));
+    Assert.assertTrue(hdfsRecord.getWdpaid().contains("2"));
   }
 
   @Test

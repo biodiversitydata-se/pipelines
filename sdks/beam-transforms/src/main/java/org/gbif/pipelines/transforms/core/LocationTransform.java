@@ -136,6 +136,7 @@ public class LocationTransform extends Transform<ExtendedRecord, LocationRecord>
         .via(LocationInterpreter.interpretCountryAndCoordinates(geocodeKvStore, mdr))
         .via(LocationInterpreter.interpretContinent(geocodeKvStore))
         .via(LocationInterpreter.interpretGadm(geocodeKvStore))
+        .via(LocationInterpreter.interpretWdpa(geocodeKvStore))
         .via(LocationInterpreter::interpretWaterBody)
         .via(LocationInterpreter::interpretStateProvince)
         .via(LocationInterpreter::interpretMinimumElevationInMeters)

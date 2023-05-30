@@ -236,6 +236,7 @@ public class OccurrenceJsonConverterTest {
                     .setLevel3Gid("XAA.1.3_1")
                     .setLevel3Name("Level 3 Cipality")
                     .build())
+            .setWdpaId(Arrays.asList("1", "2"))
             .setDistanceFromCentroidInMeters(10d)
             .build();
     lr.getIssues().getIssueList().add(OccurrenceIssue.BASIS_OF_RECORD_INVALID.name());
@@ -504,6 +505,8 @@ public class OccurrenceJsonConverterTest {
     assertEquals("Muni Cipality", gadm.get("level2Name").asText());
     assertEquals("Level 3 Cipality", gadm.get("level3Name").asText());
     assertEquals(4, gadm.path("gids").size());
+
+    assertEquals("[\"1\",\"2\"]", result.path(Indexing.WDPA_ID).toString());
 
     assertEquals(15, result.path("all").size());
 

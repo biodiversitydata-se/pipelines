@@ -207,7 +207,8 @@ public class OccurrenceJsonConverter {
         .setHasGeospatialIssue(location.getHasGeospatialIssue())
         .setLocality(location.getLocality())
         .setFootprintWKT(location.getFootprintWKT())
-        .setDistanceFromCentroidInMeters(location.getDistanceFromCentroidInMeters());
+        .setDistanceFromCentroidInMeters(location.getDistanceFromCentroidInMeters())
+        .setWdpaId(location.getWdpaId());
 
     // Coordinates
     Double decimalLongitude = location.getDecimalLongitude();

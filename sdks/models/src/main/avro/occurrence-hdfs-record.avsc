@@ -1608,6 +1608,12 @@
     "name" : "level3name",
     "type" : [ "string", "null" ]
   }, {
+    "name" : "wdpaid",
+      "type" : [ {
+        "type" : "array",
+        "items" : [ "string", "null" ]
+      }, "null" ]
+   }, {
     "name" : "iucnredlistcategory",
     "type" : [ "string", "null" ]
   }, {

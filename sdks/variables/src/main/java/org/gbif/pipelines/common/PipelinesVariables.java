@@ -228,6 +228,7 @@ public class PipelinesVariables {
       public static final String TYPE_STATUS = "typeStatus";
       public static final String PROJECT_ID = "projectId";
       public static final String PROJECT_ID_JOINED = "projectIdJoined";
+      public static final String WDPA_ID = "wdpaId";
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)

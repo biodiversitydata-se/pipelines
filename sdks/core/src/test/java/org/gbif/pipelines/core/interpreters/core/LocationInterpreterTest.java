@@ -1,26 +1,5 @@
 package org.gbif.pipelines.core.interpreters.core;
 
-import static org.gbif.api.vocabulary.OccurrenceIssue.COORDINATE_INVALID;
-import static org.gbif.api.vocabulary.OccurrenceIssue.COORDINATE_ROUNDED;
-import static org.gbif.api.vocabulary.OccurrenceIssue.COUNTRY_DERIVED_FROM_COORDINATES;
-import static org.gbif.api.vocabulary.OccurrenceIssue.COUNTRY_INVALID;
-import static org.gbif.api.vocabulary.OccurrenceIssue.FOOTPRINT_WKT_MISMATCH;
-import static org.gbif.api.vocabulary.OccurrenceIssue.GEODETIC_DATUM_ASSUMED_WGS84;
-import static org.gbif.api.vocabulary.OccurrenceIssue.PRESUMED_NEGATED_LONGITUDE;
-import static org.gbif.api.vocabulary.OccurrenceIssue.PRESUMED_SWAPPED_COORDINATE;
-import static org.gbif.pipelines.core.interpreters.core.LocationInterpreter.hasGeospatialIssues;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import org.gbif.api.vocabulary.Country;
 import org.gbif.api.vocabulary.OccurrenceIssue;
 import org.gbif.dwc.terms.DwcTerm;
@@ -35,8 +14,32 @@ import org.gbif.pipelines.io.avro.LocationRecord;
 import org.gbif.pipelines.io.avro.MetadataRecord;
 import org.gbif.rest.client.geocode.GeocodeResponse;
 import org.gbif.rest.client.geocode.Location;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.junit.Assert;
 import org.junit.Test;
+
+import static org.gbif.api.vocabulary.OccurrenceIssue.COORDINATE_INVALID;
+import static org.gbif.api.vocabulary.OccurrenceIssue.COORDINATE_ROUNDED;
+import static org.gbif.api.vocabulary.OccurrenceIssue.COUNTRY_DERIVED_FROM_COORDINATES;
+import static org.gbif.api.vocabulary.OccurrenceIssue.COUNTRY_INVALID;
+import static org.gbif.api.vocabulary.OccurrenceIssue.FOOTPRINT_WKT_MISMATCH;
+import static org.gbif.api.vocabulary.OccurrenceIssue.GEODETIC_DATUM_ASSUMED_WGS84;
+import static org.gbif.api.vocabulary.OccurrenceIssue.PRESUMED_NEGATED_LONGITUDE;
+import static org.gbif.api.vocabulary.OccurrenceIssue.PRESUMED_SWAPPED_COORDINATE;
+import static org.gbif.pipelines.core.interpreters.core.LocationInterpreter.hasGeospatialIssues;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class LocationInterpreterTest {
 
@@ -47,6 +50,9 @@ public class LocationInterpreterTest {
   static {
     KeyValueTestStore store = new KeyValueTestStore();
     store.put(LatLng.create(15.958333d, -85.908333d), toGeocodeResponse(Country.HONDURAS));
+    store.put(
+        LatLng.create(15.958333d, -85.908333d),
+        toGeocodeWdpaResponse(Country.HONDURAS, Arrays.asList("124234", "243453")));
     store.put(LatLng.create(35.891353d, -99.721925d), toGeocodeResponse(Country.UNITED_STATES));
     store.put(LatLng.create(34.69545d, -94.65836d), toGeocodeResponse(Country.UNITED_STATES));
     store.put(LatLng.create(-2.752778d, -58.653057d), toGeocodeResponse(Country.BRAZIL));
@@ -72,6 +78,19 @@ public class LocationInterpreterTest {
     location.setDistanceMeters(distanceMeters);
     location.setIsoCountryCode2Digit(country.getIso2LetterCode());
     return new GeocodeResponse(Collections.singletonList(location));
+  }
+
+  private static GeocodeResponse toGeocodeWdpaResponse(Country country, List<String> wdpaIds) {
+    List<Location> locations = new ArrayList<>();
+    for (int i = 0; i < wdpaIds.size(); i++) {
+      Location location = new Location();
+      location.setType("WDPA");
+      location.setId(wdpaIds.get(i));
+      location.setDistance((double) i);
+      locations.add(location);
+    }
+
+    return new GeocodeResponse(locations);
   }
 
   private static ExtendedRecord createEr(
@@ -473,5 +492,23 @@ public class LocationInterpreterTest {
 
     // Should
     assertEquals(1110.7, result.getDistanceFromCentroidInMeters(), 0);
+  }
+
+  @Test
+  public void wdpaIdTest() {
+    // State
+    ExtendedRecord source = ExtendedRecord.newBuilder().setId("1").build();
+    Map<String, String> coreMap = new HashMap<>();
+    coreMap.put(DwcTerm.decimalLatitude.qualifiedName(), "15.958333d");
+    coreMap.put(DwcTerm.decimalLongitude.qualifiedName(), "-85.908333d");
+    source.setCoreTerms(coreMap);
+
+    // When
+    LocationRecord result = interpret(source);
+    LocationInterpreter.interpretWdpa(KEY_VALUE_STORE).accept(source, result);
+
+    // Should
+    assertEquals(1, result.getWdpaId().size());
+    assertEquals("124234", result.getWdpaId().get(0));
   }
 }

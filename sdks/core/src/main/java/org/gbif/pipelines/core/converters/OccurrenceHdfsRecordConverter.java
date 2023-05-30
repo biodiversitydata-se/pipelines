@@ -176,6 +176,7 @@ public class OccurrenceHdfsRecordConverter {
               occurrenceHdfsRecord.setLevel2name(g.getLevel2Name());
               occurrenceHdfsRecord.setLevel3name(g.getLevel3Name());
             });
+    occurrenceHdfsRecord.setWdpaid(locationRecord.getWdpaId());
     occurrenceHdfsRecord.setDistancefromcentroidinmeters(
         locationRecord.getDistanceFromCentroidInMeters());
 

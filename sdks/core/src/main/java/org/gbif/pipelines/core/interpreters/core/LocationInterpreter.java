@@ -1,30 +1,5 @@
 package org.gbif.pipelines.core.interpreters.core;
 
-import static org.gbif.api.vocabulary.OccurrenceIssue.COORDINATE_INVALID;
-import static org.gbif.api.vocabulary.OccurrenceIssue.COORDINATE_OUT_OF_RANGE;
-import static org.gbif.api.vocabulary.OccurrenceIssue.COORDINATE_PRECISION_INVALID;
-import static org.gbif.api.vocabulary.OccurrenceIssue.COORDINATE_UNCERTAINTY_METERS_INVALID;
-import static org.gbif.api.vocabulary.OccurrenceIssue.COUNTRY_COORDINATE_MISMATCH;
-import static org.gbif.api.vocabulary.OccurrenceIssue.FOOTPRINT_SRS_INVALID;
-import static org.gbif.api.vocabulary.OccurrenceIssue.FOOTPRINT_WKT_MISMATCH;
-import static org.gbif.api.vocabulary.OccurrenceIssue.ZERO_COORDINATE;
-import static org.gbif.pipelines.core.utils.ModelUtils.addIssue;
-import static org.gbif.pipelines.core.utils.ModelUtils.extractNullAwareOptValue;
-import static org.gbif.pipelines.core.utils.ModelUtils.extractNullAwareValue;
-import static org.gbif.pipelines.core.utils.ModelUtils.extractOptValue;
-
-import com.google.common.base.Strings;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.gbif.api.vocabulary.Continent;
 import org.gbif.api.vocabulary.Country;
 import org.gbif.common.parsers.CountryParser;
@@ -38,12 +13,49 @@ import org.gbif.kvs.KeyValueStore;
 import org.gbif.kvs.geocode.LatLng;
 import org.gbif.pipelines.core.parsers.SimpleTypeParser;
 import org.gbif.pipelines.core.parsers.common.ParsedField;
-import org.gbif.pipelines.core.parsers.location.parser.*;
+import org.gbif.pipelines.core.parsers.location.parser.CentroidCalculator;
+import org.gbif.pipelines.core.parsers.location.parser.ContinentParser;
+import org.gbif.pipelines.core.parsers.location.parser.CoordinateParseUtils;
+import org.gbif.pipelines.core.parsers.location.parser.FootprintWKTParser;
+import org.gbif.pipelines.core.parsers.location.parser.GadmParser;
+import org.gbif.pipelines.core.parsers.location.parser.LocationParser;
+import org.gbif.pipelines.core.parsers.location.parser.ParsedLocation;
+import org.gbif.pipelines.core.parsers.location.parser.SpatialReferenceSystemParser;
 import org.gbif.pipelines.io.avro.ExtendedRecord;
 import org.gbif.pipelines.io.avro.LocationRecord;
 import org.gbif.pipelines.io.avro.MetadataRecord;
 import org.gbif.rest.client.geocode.GeocodeResponse;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
+import org.apache.commons.lang3.StringUtils;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+
+import com.google.common.base.Strings;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import static org.gbif.api.vocabulary.OccurrenceIssue.COORDINATE_INVALID;
+import static org.gbif.api.vocabulary.OccurrenceIssue.COORDINATE_OUT_OF_RANGE;
+import static org.gbif.api.vocabulary.OccurrenceIssue.COORDINATE_PRECISION_INVALID;
+import static org.gbif.api.vocabulary.OccurrenceIssue.COORDINATE_UNCERTAINTY_METERS_INVALID;
+import static org.gbif.api.vocabulary.OccurrenceIssue.COUNTRY_COORDINATE_MISMATCH;
+import static org.gbif.api.vocabulary.OccurrenceIssue.FOOTPRINT_SRS_INVALID;
+import static org.gbif.api.vocabulary.OccurrenceIssue.FOOTPRINT_WKT_MISMATCH;
+import static org.gbif.api.vocabulary.OccurrenceIssue.ZERO_COORDINATE;
+import static org.gbif.pipelines.core.utils.ModelUtils.addIssue;
+import static org.gbif.pipelines.core.utils.ModelUtils.extractNullAwareOptValue;
+import static org.gbif.pipelines.core.utils.ModelUtils.extractNullAwareValue;
+import static org.gbif.pipelines.core.utils.ModelUtils.extractOptValue;
 
 /** Interprets the location terms of a {@link ExtendedRecord}. */
 @Slf4j
@@ -136,6 +148,41 @@ public class LocationInterpreter {
     return (er, lr) -> {
       if (geocodeKvStore != null && lr.getHasCoordinate()) {
         GadmParser.parseGadm(lr, geocodeKvStore).ifPresent(lr::setGadm);
+      }
+    };
+  }
+
+  /**
+   * Uses the interpreted {@link DwcTerm#decimalLatitude} and {@link DwcTerm#decimalLongitude} terms
+   * to populate the WDPA id.
+   */
+  public static BiConsumer<ExtendedRecord, LocationRecord> interpretWdpa(
+      KeyValueStore<LatLng, GeocodeResponse> geocodeKvStore) {
+    return (er, lr) -> {
+      if (geocodeKvStore != null
+          && lr.getHasCoordinate()
+          && (lr.getDecimalLatitude() != null && lr.getDecimalLongitude() != null)) {
+        // Take parsed values. Uncertainty isn't needed, but included anyway so we hit the cache.
+        LatLng latLng =
+            LatLng.create(
+                lr.getDecimalLatitude(),
+                lr.getDecimalLongitude(),
+                lr.getCoordinateUncertaintyInMeters());
+
+        if (latLng.isValid()) {
+          GeocodeResponse geocodeResponse = geocodeKvStore.get(latLng);
+
+          if (geocodeResponse != null && !geocodeResponse.getLocations().isEmpty()) {
+            if (lr.getWdpaId() == null) {
+              lr.setWdpaId(new ArrayList<>());
+            }
+
+            geocodeResponse.getLocations().stream()
+                .filter(l -> l.getType() != null && l.getType().equals("WDPA"))
+                .filter(l -> l.getDistance() != null && l.getDistance() == 0)
+                .forEach(l -> lr.getWdpaId().add(l.getId()));
+          }
+        }
       }
     };
   }

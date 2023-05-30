@@ -282,6 +282,7 @@
             "level3Name": {"type": "keyword", "copy_to": "all"}
           }
         },
+        "wdpaId": {"type": "keyword", "copy_to": "all"},
 
         "year": {"type": "short"},
         "month": {"type": "short"},

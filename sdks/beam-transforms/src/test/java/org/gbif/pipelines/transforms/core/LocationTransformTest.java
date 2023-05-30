@@ -3,6 +3,7 @@ package org.gbif.pipelines.transforms.core;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -54,7 +55,7 @@ public class LocationTransformTest {
 
   @Rule public final transient TestPipeline p = TestPipeline.create();
 
-  private static GeocodeResponse toGeocodeResponse(Country country, Continent continent) {
+  private static GeocodeResponse toGeocodeResponse(Country country, Continent continent, List<String> wdpaIds) {
     List<Location> locations = new ArrayList<>();
 
     if (country != null) {
@@ -123,6 +124,16 @@ public class LocationTransformTest {
       locations.add(continentLoc);
     }
 
+    if (wdpaIds != null) {
+      for (int i = 0; i < wdpaIds.size(); i++) {
+        Location location = new Location();
+        location.setType("WDPA");
+        location.setId(wdpaIds.get(i));
+        location.setDistance((double) i);
+        locations.add(location);
+      }
+    }
+
     return new GeocodeResponse(locations);
   }
 
@@ -162,9 +173,9 @@ public class LocationTransformTest {
 
     // State
     KeyValueTestStoreStub<LatLng, GeocodeResponse> kvStore = new KeyValueTestStoreStub<>();
-    kvStore.put(LatLng.create(56.26d, 9.51d), toGeocodeResponse(Country.DENMARK, Continent.EUROPE));
-    kvStore.put(LatLng.create(36.21d, 138.25d), toGeocodeResponse(Country.JAPAN, Continent.ASIA));
-    kvStore.put(LatLng.create(88.21d, -32.01d), toGeocodeResponse(null, null));
+    kvStore.put(LatLng.create(56.26d, 9.51d), toGeocodeResponse(Country.DENMARK, Continent.EUROPE, Arrays.asList("1", "2")));
+    kvStore.put(LatLng.create(36.21d, 138.25d), toGeocodeResponse(Country.JAPAN, Continent.ASIA, null));
+    kvStore.put(LatLng.create(88.21d, -32.01d), toGeocodeResponse(null, null, null));
     SerializableSupplier<KeyValueStore<LatLng, GeocodeResponse>> geocodeKvStore =
         () -> GeocodeKvStore.create(kvStore);
 
@@ -199,9 +210,10 @@ public class LocationTransformTest {
       "Midtjylland",
       "Silkeborg",
       null,
-      null,
+      null,// 30
       "blabla",
-      null
+      null,
+      "1"
     };
     final String[] japan = {
       "1", // 0
@@ -234,7 +246,8 @@ public class LocationTransformTest {
       "Nagano",
       "Nagawa",
       null,
-      "blabla",
+      "blabla", // 30
+      null,
       null,
       null
     };
@@ -269,9 +282,10 @@ public class LocationTransformTest {
       null,
       null,
       null,
-      "POLYGON((100000 515000,100000 520000,105000 520000,105000 515000,100000 515000))",
+      "POLYGON((100000 515000,100000 520000,105000 520000,105000 515000,100000 515000))", // 30
       "EPSG:28992",
-      "POLYGON ((52.619749292808244 4.575033022857827, 52.66468072273538 4.574203170903047, 52.665162889286556 4.648106265726084, 52.6202308261076 4.648860682668263, 52.619749292808244 4.575033022857827))"
+      "POLYGON ((52.619749292808244 4.575033022857827, 52.66468072273538 4.574203170903047, 52.665162889286556 4.648106265726084, 52.6202308261076 4.648860682668263, 52.619749292808244 4.575033022857827))",
+      null
     };
 
     final MetadataRecord mdr =
@@ -388,6 +402,7 @@ public class LocationTransformTest {
                       .setPublishingCountry(mdr.getDatasetPublishingCountry())
                       .setCreated(0L)
                       .setFootprintWKT(x[32])
+                      .setWdpaId(x[33] != null ? Collections.singletonList(x[33]) : Collections.emptyList())
                       .build();
               Arrays.asList(x[16].split(","))
                   .forEach(z -> record.getIssues().getIssueList().add(z));
