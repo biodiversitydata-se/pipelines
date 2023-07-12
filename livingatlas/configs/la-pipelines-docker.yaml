@@ -1,0 +1,39 @@
+dataset-archive-list:
+  inputPath: /data/dwca-imports
+
+dwca-avro:
+  inputPath: /data/dwca-imports/{datasetId}
+  tempLocation: /data/dwca-imports/{datasetId}
+
+collectory:
+  wsUrl: http://living-atlas-collectory:8080/ws/
+  httpHeaders:
+    Authorization: ALA_API_KEY
+
+alaNameMatch:
+  wsUrl: http://living-atlas-namematching:8080
+
+uuid:
+  throwErrorOnValidationFail: false
+
+sds:
+  wsUrl: http://living-atlas-sensitive-data-service:8080
+
+imageService:
+  wsUrl: http://living-atlas-images:8080
+  httpHeaders:
+    apiKey: ALA_API_KEY
+
+speciesListService:
+  wsUrl: http://living-atlas-specieslists:8080
+
+samplingService:
+  wsUrl: http://living-atlas-spatial-service:8080
+
+solr:
+  zkHost: ZK_URL
+
+elastic:
+  esHosts: ES_HOSTS
+  esAlias: ES_ALIAS
+  indexNumberShards: 6

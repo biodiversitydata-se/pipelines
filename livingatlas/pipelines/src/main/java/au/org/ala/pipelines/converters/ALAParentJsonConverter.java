@@ -54,6 +54,12 @@ public class ALAParentJsonConverter {
     String internalId = uuid != null ? uuid.getUuid() : identifier.getInternalId();
     String uniqueKey = uuid != null ? uuid.getUuid() : identifier.getInternalId();
 
+    if (internalId == null) {
+      internalId = HashConverter.getSha1(
+              metadata.getDataResourceUid(),
+              verbatim.getCoreId());
+    }
+
     ParentJsonRecord.Builder builder =
         convertToParentRecord()
             .setId(verbatim.getId())

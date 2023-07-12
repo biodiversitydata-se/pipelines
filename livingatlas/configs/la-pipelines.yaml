@@ -258,7 +258,7 @@ elastic:
   targetPath: '{fsPath}/pipelines-data'
   runner: SparkRunner
   esHosts: http://localhost:9200
-  esSchemaPath: /tmp/es-parent-schema.json
+  esSchemaPath: /Users/mar759/dev/pipelines/livingatlas/pipelines/src/main/resources/es-event-schema.json
   esAlias: event
   esIndexName: 'event_{datasetId}'
   indexNumberShards: 1
