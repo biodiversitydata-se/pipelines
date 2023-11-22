@@ -12,17 +12,21 @@ This is an adapted version of [Getting started in livingatlas/README.md](../livi
 * Optionally install the `avro-tools` package via Brew (`brew install avro-tools`)
 
 ### Setting up la-pipelines
-1. Download shape files from [here](https://pipelines-shp.s3-ap-southeast-2.amazonaws.com/pipelines-shapefiles.zip) and expand into `/data/pipelines-shp` directory
+1. Download shape files from [here](https://pipelines-shp.s3-ap-southeast-2.amazonaws.com/pipelines-shapefiles.zip) and extract into the `/data/pipelines-shp` directory
 1. Download a test darwin core archive (e.g. https://archives.ala.org.au/archives/gbif/dr893/dr893.zip) and put into `/data/biocache-load/dr893/`
 1. Create the following directory `/data/pipelines-data`
-2. In `/data` create the symlink: 
+2. Run:
     ```
-    ln -s /home/mats/src/biodiversitydata-se/pipelines/livingatlas/pipelines/src/test/resources/vocabularies pipelines-vocabularies
+    mkdir /data/pipelines-vocabularies
+    wget -O /data/pipelines-vocabularies/DegreeOfEstablishment.json "https://api.gbif.org/v1/vocabularies/DegreeOfEstablishment/releases/LATEST/export"
+    wget -O /data/pipelines-vocabularies/EstablishmentMeans.json "https://api.gbif.org/v1/vocabularies/EstablishmentMeans/releases/LATEST/export"
+    wget -O /data/pipelines-vocabularies/LifeStage.json "https://api.gbif.org/v1/vocabularies/LifeStage/releases/LATEST/export"
+    wget -O /data/pipelines-vocabularies/Pathway.json "https://api.gbif.org/v1/vocabularies/Pathway/releases/LATEST/export"
     ```
 2.  Run:
     ```
-    $ mkdir -p /data/pipelines-all-datasets/index-record/dr893
-    $ touch /data/pipelines-all-datasets/index-record/dr893/dummy.avro
+    mkdir -p /data/pipelines-all-datasets/index-record/dr893
+    touch /data/pipelines-all-datasets/index-record/dr893/dummy.avro
     ```
 2. `cd livingatlas`
 1. `git checkout dev`
@@ -35,15 +39,19 @@ This is an adapted version of [Getting started in livingatlas/README.md](../livi
 ### Running la-pipelines
 1. Start required docker containers using
     ```bash
-    docker-compose -f pipelines/src/main/docker/ala-name-service.yml up -d
     docker-compose -f pipelines/src/main/docker/ala-sensitive-data-service.yml up -d
     ```
 1. `cd scripts`
-1. To convert DwCA to AVRO, run `./la-pipelines dwca-avro dr893`
-1. To interpret, run `./la-pipelines interpret dr893 --embedded`
-1. To validate, run `./la-pipelines validate dr893 --embedded`
-1. To mint UUIDs, run `./la-pipelines uuid dr893 --embedded`
-1. run `./la-pipelines sds dr893 --embedded`
-1. To sample, run `./la-pipelines sample dr893 --embedded`
-1. To create index avro files, run `./la-pipelines index dr893 --embedded`
-2. To generate the SOLR index, run `./la-pipelines solr dr893 --embedded`
+2. To download from Collectory, run `./la-pipelines copy dr15`. File is saved to `/data/dwca-export`
+3. To copy to location used by next step, run `cp -r /data/dwca-export/dr15 /data/biocache-load/`
+1. To convert DwCA to AVRO, run `./la-pipelines dwca-avro dr15`
+1. To interpret, run `./la-pipelines interpret dr15 --embedded`
+1. To validate, run `./la-pipelines validate dr15 --embedded`
+1. To mint UUIDs, run `./la-pipelines uuid dr15 --embedded`
+1. To check for sensitive data, run `./la-pipelines sds dr15 --embedded`
+1. Optionally, if dataset has images  (don't run against production image service):
+   2. Push images to image service, run `./la-pipelines image-load dr15 --embedded`
+   2. Sync from image service, run `./la-pipelines image-sync dr15 --embedded`
+2. To create index avro files, run `./la-pipelines index dr15 --embedded`
+1. To sample, run `./la-pipelines sample dr15 --embedded`
+2. To generate the SOLR index, run `./la-pipelines solr dr15 --embedded`
