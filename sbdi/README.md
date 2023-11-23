@@ -12,8 +12,11 @@ This is an adapted version of [Getting started in livingatlas/README.md](../livi
 * Optionally install the `avro-tools` package via Brew (`brew install avro-tools`)
 
 ### Setting up la-pipelines
-1. Download shape files from [here](https://pipelines-shp.s3-ap-southeast-2.amazonaws.com/pipelines-shapefiles.zip) and extract into the `/data/pipelines-shp` directory
-1. Create the following directory `/data/pipelines-data`
+1. Create the directory `/data/pipelines-data`
+1. Create symlink:
+    ```
+    ln -s /home/mats/src/biodiversitydata-se/pipelines/sbdi/pipelines-shp /data/
+    ```
 1. Run:
     ```
     mkdir /data/pipelines-vocabularies

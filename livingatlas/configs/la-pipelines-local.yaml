@@ -20,7 +20,7 @@ solr:
   numOfPartitions: 2
 geocodeConfig:
   stateProvince:
-    path: /data/pipelines-shp/lan-wgc84
+    path: /data/pipelines-shp/lan
     field: LnNamn
 images:
   # pipe separated list (note: YAML list not coming through correctly)
