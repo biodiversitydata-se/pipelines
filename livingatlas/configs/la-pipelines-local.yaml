@@ -1,3 +1,5 @@
+copy:
+  copyPath: /data/biocache-load
 alaNameMatch:
   wsUrl: https://namematching.biodiversitydata.se/
 sds:

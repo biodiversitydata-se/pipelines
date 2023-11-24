@@ -25,12 +25,7 @@ This is an adapted version of [Getting started in livingatlas/README.md](../livi
     wget -O /data/pipelines-vocabularies/LifeStage.json "https://api.gbif.org/v1/vocabularies/LifeStage/releases/LATEST/export"
     wget -O /data/pipelines-vocabularies/Pathway.json "https://api.gbif.org/v1/vocabularies/Pathway/releases/LATEST/export"
     ```
-1.  Run:
-    ```
-    mkdir -p /data/pipelines-all-datasets/index-record/dr893
-    touch /data/pipelines-all-datasets/index-record/dr893/dummy.avro
-    ```
-1. Build with maven: 
+1. Build:
    ```
    mvn clean package -P skip-coverage,livingatlas-artifacts -T 1C -DskipTests -nsu
    ```
@@ -46,8 +41,7 @@ This is an adapted version of [Getting started in livingatlas/README.md](../livi
     docker-compose -f pipelines/src/main/docker/ala-sensitive-data-service.yml up -d
     ```
 1. `cd scripts`
-1. To download from Collectory, run `./la-pipelines copy dr15`. File is saved to `/data/dwca-export`
-1. To copy to location used by next step, run `cp -r /data/dwca-export/dr15 /data/biocache-load/`
+1. To download from Collectory, run `./la-pipelines copy dr15`. File is saved to `/data/biocache-load`
 1. To convert DwCA to AVRO, run `./la-pipelines dwca-avro dr15`
 1. To interpret, run `./la-pipelines interpret dr15 --embedded`
 1. To mint UUIDs, run `./la-pipelines uuid dr15 --embedded`
