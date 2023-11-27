@@ -1,13 +1,22 @@
 #!/bin/bash
 
-DR=$1
+# Exit on errors
+set -e
 
-./la-pipelines dwca-avro $DR
-./la-pipelines interpret $DR --embedded
-./la-pipelines uuid $DR --embedded
-./la-pipelines sds $DR --embedded
-#./la-pipelines image-load $DR --embedded
-#./la-pipelines image-sync $DR --embedded
-./la-pipelines index $DR --embedded
-./la-pipelines sample $DR --embedded
-./la-pipelines solr $DR --embedded
+dr=$1
+dr_data=/data/pipelines-data/$dr/1
+
+./la-pipelines dwca-avro $dr
+./la-pipelines interpret $dr --embedded
+./la-pipelines uuid $dr --embedded
+./la-pipelines sds $dr --embedded
+if grep -q multimediaRecordsCountAttempted "$dr_data/interpretation-metrics.yml"; then
+  ./la-pipelines image-load $dr --embedded
+  ./la-pipelines image-sync $dr --embedded
+fi
+./la-pipelines index $dr --embedded
+./la-pipelines sample $dr --embedded
+if [ ! -d "$dr_data/sampling" ]; then
+  extra_args="--extra-args=includeSampling=false"
+fi
+./la-pipelines solr $dr --embedded $extra_args
