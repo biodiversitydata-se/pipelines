@@ -29,3 +29,8 @@ images:
   recognisedPaths: "https://images.biodiversitydata.se|http://localhost:8082"
 export:
   imageServicePath: "https://images.biodiversitydata.se/image/proxyImageThumbnailLarge?imageId={0}"
+locationInfoConfig:
+#    countryNamesFile : /data/pipelines-data/resources/countries.txt
+#    countryCentrePointsFile : /data/pipelines-data/resources/countryCentrePoints.txt
+#    stateProvinceCentrePointsFile : /data/pipelines-data/resources/stateProvinceCentrePoints.txt
+    stateProvinceNamesFile : /data/pipelines-data/resources/stateProvinces.tsv

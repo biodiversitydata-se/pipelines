@@ -12,12 +12,16 @@ This is an adapted version of [Getting started in livingatlas/README.md](../livi
 * Optionally install the `avro-tools` package via Brew (`brew install avro-tools`)
 
 ### Setting up la-pipelines
-1. Create the directory `/data/pipelines-data`
 1. Create symlink:
     ```
     ln -s /home/mats/src/biodiversitydata-se/pipelines/sbdi/pipelines-shp /data/
     ```
-1. Run:
+1. Create directory and symlink:
+    ```
+    mkdir -p /data/pipelines-data/resources
+    ln -s /home/mats/src/biodiversitydata-se/pipelines/sbdi/stateProvinces.tsv /data/pipelines-data/resources/
+    ```
+2. Download vocabularies:
     ```
     mkdir /data/pipelines-vocabularies
     wget -O /data/pipelines-vocabularies/DegreeOfEstablishment.json "https://api.gbif.org/v1/vocabularies/DegreeOfEstablishment/releases/LATEST/export"
