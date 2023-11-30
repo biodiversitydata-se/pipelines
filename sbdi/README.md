@@ -29,22 +29,25 @@ This is an adapted version of [Getting started in livingatlas/README.md](../livi
     wget -O /data/pipelines-vocabularies/LifeStage.json "https://api.gbif.org/v1/vocabularies/LifeStage/releases/LATEST/export"
     wget -O /data/pipelines-vocabularies/Pathway.json "https://api.gbif.org/v1/vocabularies/Pathway/releases/LATEST/export"
     ```
-1. Build:
+1. Build (This usually fails with an error regarding a transfer from http://conjars.org. That error can be ignored):
    ```
    mvn clean package -P skip-coverage,livingatlas-artifacts -T 1C -DskipTests -nsu
    ```
-   (This usually fails with an error regarding a transfer from http://conjars.org. That can be ignored) 
 1. Setup solr:
-   1. Clone [biocache-solr](https://github.com/biodiversitydata-se/biocache-solr) and [biocache-service](https://github.com/biodiversitydata-se/biocache-service)
+   1. Clone the [biocache-service](https://github.com/biodiversitydata-se/biocache-service) repo
    2. In biocache-service, run `docker-compose up -d solr` so start solr
-   3. In biocache-solr, run `make update-solr-config` to create or recreate the Solr collection
+   3. To create or recreate the Solr collection, run:
+       ```
+       cd livingatlas/solr/scripts
+       ./update-solr-config.sh
+       ```
 
 ### Running la-pipelines
 1. Start required docker containers using
     ```bash
     docker-compose -f pipelines/src/main/docker/ala-sensitive-data-service.yml up -d
     ```
-1. `cd scripts`
+1. `cd livingatlas/scripts`
 1. To download from Collectory, run `./la-pipelines copy dr15`. File is saved to `/data/biocache-load`
 1. To convert DwCA to AVRO, run `./la-pipelines dwca-avro dr15`
 1. To interpret, run `./la-pipelines interpret dr15 --embedded`
