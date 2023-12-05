@@ -1,1 +1,38 @@
-# which filesystem to use: local or hdfs
+copy:
+  copyPath: /data/biocache-load
+alaNameMatch:
+  wsUrl: https://namematching.biodiversitydata.se/
+sds:
+  wsUrl: http://localhost:9189
+collectory:
+  wsUrl: https://collections.biodiversitydata.se/ws/
+  httpHeaders:
+    Authorization:
+imageService:
+  #wsUrl: https://images.biodiversitydata.se/ws/
+  wsUrl: http://localhost:8082/
+  httpHeaders:
+    apiKey:
+speciesListService:
+  wsUrl: https://lists.biodiversitydata.se
+samplingService:
+  wsUrl: https://spatial.biodiversitydata.se/ws/
+solr:
+  #zkHost: localhost:2181,localhost:2182,localhost:2183
+  zkHost: localhost:9983
+  includeSampling: true
+  numOfPartitions: 2
+geocodeConfig:
+  stateProvince:
+    path: /data/pipelines-shp/lan
+    field: LnNamn
+images:
+  # pipe separated list (note: YAML list not coming through correctly)
+  recognisedPaths: "https://images.biodiversitydata.se|http://localhost:8082"
+export:
+  imageServicePath: "https://images.biodiversitydata.se/image/proxyImageThumbnailLarge?imageId={0}"
+locationInfoConfig:
+#    countryNamesFile : /data/pipelines-data/resources/countries.txt
+#    countryCentrePointsFile : /data/pipelines-data/resources/countryCentrePoints.txt
+#    stateProvinceCentrePointsFile : /data/pipelines-data/resources/stateProvinceCentrePoints.txt
+    stateProvinceNamesFile : /data/pipelines-data/resources/stateProvinces.tsv
