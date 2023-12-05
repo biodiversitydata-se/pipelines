@@ -7,17 +7,19 @@ sds:
 collectory:
   wsUrl: https://collections.biodiversitydata.se/ws/
   httpHeaders:
-    Authorization: 7cde19e0-58f4-4c3d-9205-1c4b0d2e5b1f
+    Authorization:
 imageService:
   #wsUrl: https://images.biodiversitydata.se/ws/
   wsUrl: http://localhost:8082/
   httpHeaders:
-    apiKey: 3cdad681-2fa4-47a1-a8d2-6ea789cf003f
+    apiKey:
 speciesListService:
   wsUrl: https://lists.biodiversitydata.se
 samplingService:
   wsUrl: https://spatial.biodiversitydata.se/ws/
 solr:
+  #zkHost: localhost:2181,localhost:2182,localhost:2183
+  zkHost: localhost:9983
   includeSampling: true
   numOfPartitions: 2
 geocodeConfig:
