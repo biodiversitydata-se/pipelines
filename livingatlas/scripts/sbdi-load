@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Exit on errors
+set -e
+
+dr=$1
+dr_data=/data/pipelines-data/$dr/1
+scriptpath="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+$scriptpath/la-pipelines dwca-avro $dr
+$scriptpath/la-pipelines interpret $dr --embedded
+$scriptpath/la-pipelines uuid $dr --embedded
+$scriptpath/la-pipelines sds $dr --embedded
+if grep -q multimediaRecordsCountAttempted "$dr_data/interpretation-metrics.yml"; then
+  $scriptpath/la-pipelines image-load $dr --embedded
+  $scriptpath/la-pipelines image-sync $dr --embedded
+fi
+$scriptpath/la-pipelines index $dr --embedded
+$scriptpath/la-pipelines sample $dr --embedded
+if [ ! -d "$dr_data/sampling" ]; then
+  extra_args="--extra-args=includeSampling=false"
+fi
+$scriptpath/la-pipelines solr $dr --embedded $extra_args
