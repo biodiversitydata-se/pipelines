@@ -101,6 +101,7 @@ public class CoreTsvConverterTest {
       "\"br_datasetID\"", // DwcTerm.datasetID
       "\"br_datasetName\"", // DwcTerm.datasetName
       "\"2002\"", // DwcTerm.dateIdentified
+      "\"br_degreeOfEstablishment\"", // DwcTerm.degreeOfEstablishment
       "\"raw_er_disposition\"", // DwcTerm.disposition
       "\"raw_er_dynamicProperties\"", // DwcTerm.dynamicProperties
       "\"1111111\"", // DwcTerm.endDayOfYear
@@ -234,7 +235,7 @@ public class CoreTsvConverterTest {
       // Other Terms
       "\"5\"", // taxonRankID
       // GBIF Terms
-      "\"raw_er_recordedByID\"" // GbifTerm.recordedByID
+      "\"br_agent_value_rb\"" // GbifTerm.recordedByID
     };
 
     // State
@@ -337,6 +338,9 @@ public class CoreTsvConverterTest {
     core.put(DwcTerm.datasetName.qualifiedName(), "raw_er_" + DwcTerm.datasetName.simpleName());
     core.put(
         DwcTerm.dateIdentified.qualifiedName(), "raw_er_" + DwcTerm.dateIdentified.simpleName());
+    core.put(
+        DwcTerm.degreeOfEstablishment.qualifiedName(),
+        "raw_er_" + DwcTerm.degreeOfEstablishment.simpleName());
     core.put(DwcTerm.disposition.qualifiedName(), "raw_er_" + DwcTerm.disposition.simpleName());
     core.put(
         DwcTerm.dynamicProperties.qualifiedName(),
@@ -643,6 +647,11 @@ public class CoreTsvConverterTest {
                     .setConcept("br_establishmentMeans")
                     .setLineage(Collections.singletonList("br_establishmentMeans"))
                     .build())
+            .setDegreeOfEstablishment(
+                VocabularyConcept.newBuilder()
+                    .setConcept("br_degreeOfEstablishment")
+                    .setLineage(Collections.singletonList("br_degreeOfEstablishment"))
+                    .build())
             .setIndividualCount(222)
             .setTypeStatus(Collections.singletonList("br_typeStatus"))
             .setTypifiedName("br_typifiedName")
@@ -817,26 +826,45 @@ public class CoreTsvConverterTest {
             .setFirstLoaded(6L)
             .build();
 
+    Image im1 =
+        Image.newBuilder()
+            .setCreated("ir_Image")
+            .setAudience("ir_Audienc")
+            .setCreator("ir_Creator")
+            .setContributor("ir_Contributor")
+            .setDatasetId("ir_DatasetId")
+            .setLicense("ir_License")
+            .setLatitude(77d)
+            .setLongitude(777d)
+            .setSpatial("ir_Spatial")
+            .setTitle("ir_Title")
+            .setRightsHolder("ir_RightsHolder")
+            .setIdentifier("ir_Identifier1")
+            .setFormat("image")
+            .build();
+
+    Image im2 =
+        Image.newBuilder()
+            .setCreated("ir_Audio")
+            .setAudience("ir_Audienc")
+            .setCreator("ir_Creator")
+            .setContributor("ir_Contributor")
+            .setDatasetId("ir_DatasetId")
+            .setLicense("ir_License")
+            .setLatitude(77d)
+            .setLongitude(777d)
+            .setSpatial("ir_Spatial")
+            .setTitle("ir_Title")
+            .setRightsHolder("ir_RightsHolder")
+            .setIdentifier("ir_Identifier2")
+            .setFormat("audio")
+            .build();
+
     ImageRecord ir =
         ImageRecord.newBuilder()
             .setId(DwcTerm.occurrenceID.simpleName())
             .setCreated(7L)
-            .setImageItems(
-                Collections.singletonList(
-                    Image.newBuilder()
-                        .setCreated("ir_Image")
-                        .setAudience("ir_Audienc")
-                        .setCreator("ir_Creator")
-                        .setContributor("ir_Contributor")
-                        .setDatasetId("ir_DatasetId")
-                        .setLicense("ir_License")
-                        .setLatitude(77d)
-                        .setLongitude(777d)
-                        .setSpatial("ir_Spatial")
-                        .setTitle("ir_Title")
-                        .setRightsHolder("ir_RightsHolder")
-                        .setIdentifier("ir_Identifier")
-                        .build()))
+            .setImageItems(Arrays.asList(im1, im2))
             .build();
 
     TaxonProfile tp = TaxonProfile.newBuilder().setId(DwcTerm.occurrenceID.simpleName()).build();
@@ -894,6 +922,10 @@ public class CoreTsvConverterTest {
 
     // Should
     Assert.assertEquals(String.join("\t", expected), result);
+
+    Assert.assertEquals(1, source.getMultiValues().get("imageIDs").size());
+    Assert.assertEquals(1, source.getMultiValues().get("soundIDs").size());
+    Assert.assertNull(source.getMultiValues().get("videoIDs"));
   }
 
   @Test
@@ -957,6 +989,7 @@ public class CoreTsvConverterTest {
       "\"\"", // DwcTerm.datasetID
       "\"\"", // DwcTerm.datasetName
       "\"\"", // DwcTerm.dateIdentified
+      "\"\"", // DwcTerm.degreeOfEstablishment
       "\"\"", // DwcTerm.disposition
       "\"\"", // DwcTerm.dynamicProperties
       "\"\"", // DwcTerm.endDayOfYear
@@ -1300,6 +1333,7 @@ public class CoreTsvConverterTest {
     expected.add(DwcTerm.datasetID.qualifiedName());
     expected.add(DwcTerm.datasetName.qualifiedName());
     expected.add(DwcTerm.dateIdentified.qualifiedName());
+    expected.add(DwcTerm.degreeOfEstablishment.qualifiedName());
     expected.add(DwcTerm.disposition.qualifiedName());
     expected.add(DwcTerm.dynamicProperties.qualifiedName());
     expected.add(DwcTerm.endDayOfYear.qualifiedName());
