@@ -29,9 +29,9 @@ This is an adapted version of [Getting started in livingatlas/README.md](../livi
     wget -O /data/pipelines-vocabularies/LifeStage.json "https://api.gbif.org/v1/vocabularies/LifeStage/releases/LATEST/export"
     wget -O /data/pipelines-vocabularies/Pathway.json "https://api.gbif.org/v1/vocabularies/Pathway/releases/LATEST/export"
     ```
-1. Build (This usually fails with an error regarding a transfer from http://conjars.org. That error can be ignored):
+1. Build:
    ```
-   mvn clean package -P skip-coverage,livingatlas-artifacts -T 1C -DskipTests -nsu
+   make build
    ```
 1. Setup solr:
    1. Clone the [biocache-service](https://github.com/biodiversitydata-se/biocache-service) repo
