@@ -56,6 +56,8 @@ This is an adapted version of [Getting started in livingatlas/README.md](../livi
 1. Optionally, if dataset has images  (don't run against production image service):
    1. Push images to image service, run `./la-pipelines image-load dr15 --embedded`
    1. Sync from image service, run `./la-pipelines image-sync dr15 --embedded`
-1. To create index avro files, run `./la-pipelines index dr15 --embedded`
-1. To sample, run `./la-pipelines sample dr15 --embedded`
+1. To create index avro files, run `./la-pipelines index dr15 --embedded` (To index images, run: `./la-pipelines index dr15 --embedded --extra-args=includeImages=true` 
+1. To sample, run `./la-pipelines sample dr15 --embedded` (If the dataset lacks sampling info, run: `./la-pipelines sample dr15 --embedded --extra-args=includeSampling=false`)
 1. To generate the SOLR index, run `./la-pipelines solr dr15 --embedded`
+
+To run steps 4-11 in one go use the [sbdi-load](../livingatlas/scripts/sbdi-load) script.

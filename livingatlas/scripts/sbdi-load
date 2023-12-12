@@ -11,13 +11,16 @@ $scriptpath/la-pipelines dwca-avro $dr
 $scriptpath/la-pipelines interpret $dr --embedded
 $scriptpath/la-pipelines uuid $dr --embedded
 $scriptpath/la-pipelines sds $dr --embedded
-if grep -q multimediaRecordsCountAttempted "$dr_data/interpretation-metrics.yml"; then
-  $scriptpath/la-pipelines image-load $dr --embedded
-  $scriptpath/la-pipelines image-sync $dr --embedded
+#if grep -q multimediaRecordsCountAttempted "$dr_data/interpretation-metrics.yml"; then
+#  $scriptpath/la-pipelines image-load $dr --embedded
+#  $scriptpath/la-pipelines image-sync $dr --embedded
+#fi
+if [ ! -d "$dr_data/images" ]; then
+  extra_args_index="--extra-args=includeImages=true"
 fi
-$scriptpath/la-pipelines index $dr --embedded
+$scriptpath/la-pipelines index $dr --embedded $extra_args_index
 $scriptpath/la-pipelines sample $dr --embedded
 if [ ! -d "$dr_data/sampling" ]; then
-  extra_args="--extra-args=includeSampling=false"
+  extra_args_sample="--extra-args=includeSampling=false"
 fi
-$scriptpath/la-pipelines solr $dr --embedded $extra_args
+$scriptpath/la-pipelines solr $dr --embedded $extra_args_sample

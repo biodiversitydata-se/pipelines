@@ -17,6 +17,8 @@ speciesListService:
   wsUrl: https://lists.biodiversitydata.se
 samplingService:
   wsUrl: https://spatial.biodiversitydata.se/ws/
+index:
+  includeImages: false
 solr:
   #zkHost: localhost:2181,localhost:2182,localhost:2183
   zkHost: localhost:9983
