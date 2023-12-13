@@ -131,9 +131,10 @@ public class MigrateUUIDPipeline implements Serializable {
                 },
                 Encoders.tuple(Encoders.STRING(), Encoders.LONG()));
 
+    // SBDI: changed to left join since we lack data for most of the records in firstLoadedDataset
     Dataset<Row> combined =
         uuidRecords.join(
-            firstLoadedDataset, uuidRecords.col("_3").equalTo(firstLoadedDataset.col("_1")));
+            firstLoadedDataset, uuidRecords.col("_3").equalTo(firstLoadedDataset.col("_1")), "left");
 
     combined
         .select(
