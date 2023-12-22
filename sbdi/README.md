@@ -61,3 +61,67 @@ This is an adapted version of [Getting started in livingatlas/README.md](../livi
 1. To generate the SOLR index, run `./la-pipelines solr dr15 --embedded` (If the dataset lacks sampling info, run: `./la-pipelines solr dr15 --embedded --extra-args=includeSampling=false`)
 
 To run steps 3-11 in one go use the [sbdi-load](../livingatlas/scripts/sbdi-load) script.
+
+## Production
+There are currently one manager node (live-pipelines-1) and two worker nodes (live-pipelines-2 and -3) for running pipelines. 
+
+The solr cloud consist of three nodes (live-solrcloud-1 , -2 and -3).
+
+### Running pipelines
+Run pipelines as the `spark` user.
+
+Use `sbdi-load` (/usr/bin/sbdi-load) to run all the pipeline steps for a single dataset:
+```
+sbdi-load dr11 > /data/log/dr11.log 2>&1
+```
+
+`sbdi-load` runs the following pipeline steps:
+- copy
+- dwca-avro
+- interpret
+- uuid
+- sds
+- index
+- sample
+- solr
+
+Use `la-pipelines` (/usr/bin/la-pipelines) to run single pipeline steps:
+```
+la-pipelines interpret dr11 > /data/log/dr11-interpret.log 2>&1
+```
+
+### Monitoring
+
+There are a number of web ui:s running on the various nodes that can be useful to monitor while running pipelines. SSL tunneling can be used to access them.
+
+Solr cloud:
+```
+ssh -L 8973:127.0.0.1:8973 live-solrcloud-1
+```
+
+Hadoop manager:
+```
+ssh -L 50070:127.0.0.1:50070 live-pipelines-1
+```
+
+Hadoop workers:
+```
+ssh -L 50075:127.0.0.1:50075 live-pipelines-2
+ssh -L 50076:127.0.0.1:50075 live-pipelines-3
+```
+
+Spark manager:
+```
+ssh -L 8080:127.0.0.1:8080 live-pipelines-1
+```
+
+Spark workers:
+```
+ssh -L 8085:127.0.0.1:8085 live-pipelines-2
+ssh -L 8086:127.0.0.1:8085 live-pipelines-3
+```
+
+SparkContext (only available when Spark is executing tasks): 
+```
+ssh -L 4040:127.0.0.1:4040 live-pipelines-1
+```
