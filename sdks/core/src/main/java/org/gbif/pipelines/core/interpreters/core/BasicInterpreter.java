@@ -10,6 +10,7 @@ import static org.gbif.api.vocabulary.OccurrenceIssue.TYPE_STATUS_INVALID;
 import static org.gbif.pipelines.core.utils.ModelUtils.DEFAULT_SEPARATOR;
 import static org.gbif.pipelines.core.utils.ModelUtils.addIssue;
 import static org.gbif.pipelines.core.utils.ModelUtils.extractListValue;
+import static org.gbif.pipelines.core.utils.ModelUtils.extractNullAwareOptValue;
 import static org.gbif.pipelines.core.utils.ModelUtils.extractOptValue;
 
 import com.google.common.base.Strings;
@@ -324,6 +325,19 @@ public class BasicInterpreter {
     List<String> list = extractListValue(er, GbifTerm.projectId);
     if (!list.isEmpty()) {
       br.setProjectId(list);
+    }
+  }
+
+  /** {@link DwcTerm#associatedSequences} interpretation. */
+  public static void interpretIsSequenced(ExtendedRecord er, BasicRecord br) {
+    br.setIsSequenced(extractNullAwareOptValue(er, DwcTerm.associatedSequences).isPresent());
+  }
+
+  /** {@link DwcTerm#associatedSequences} interpretation. */
+  public static void interpretAssociatedSequences(ExtendedRecord er, BasicRecord br) {
+    List<String> list = extractListValue(DEFAULT_SEPARATOR + "|;", er, DwcTerm.associatedSequences);
+    if (!list.isEmpty()) {
+      br.setAssociatedSequences(list);
     }
   }
 
