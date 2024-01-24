@@ -38,3 +38,5 @@ locationInfoConfig:
 #    countryCentrePointsFile : /data/pipelines-data/resources/countryCentrePoints.txt
 #    stateProvinceCentrePointsFile : /data/pipelines-data/resources/stateProvinceCentrePoints.txt
     stateProvinceNamesFile : /data/pipelines-data/resources/stateProvinces.tsv
+recordedByConfig:
+  cacheSizeMb: 1000000
