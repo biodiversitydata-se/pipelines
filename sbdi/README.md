@@ -63,9 +63,9 @@ This is an adapted version of [Getting started in livingatlas/README.md](../livi
 To run steps 3-11 in one go use the [sbdi-load](../livingatlas/scripts/sbdi-load) script.
 
 ## Production
-There are currently one manager node (live-pipelines-1) and two worker nodes (live-pipelines-2 and -3) for running pipelines. 
+There are currently one manager node (live-pipelines-1) and six worker nodes (live-pipelines-2 - live-pipelines-7) for running pipelines. 
 
-The solr cloud consist of three nodes (live-solrcloud-1 , -2 and -3).
+The solr cloud consist of three nodes (live-solrcloud-1, -2 and -3).
 
 ### Running pipelines
 Run pipelines as the `spark` user.
@@ -107,21 +107,46 @@ ssh -L 50070:127.0.0.1:50070 live-pipelines-1
 Hadoop workers:
 ```
 ssh -L 50075:127.0.0.1:50075 live-pipelines-2
-ssh -L 50076:127.0.0.1:50075 live-pipelines-3
 ```
 
 Spark manager:
 ```
-ssh -L 8080:127.0.0.1:8080 live-pipelines-1
+ssh -L 8084:127.0.0.1:8080 live-pipelines-1
 ```
 
 Spark workers:
 ```
 ssh -L 8085:127.0.0.1:8085 live-pipelines-2
-ssh -L 8086:127.0.0.1:8085 live-pipelines-3
 ```
 
 SparkContext (only available when Spark is executing tasks): 
 ```
 ssh -L 4040:127.0.0.1:4040 live-pipelines-1
 ```
+
+### Useful commands
+
+Spark:
+```
+sudo su - spark
+spark-cluster.sh --stop
+spark-cluster.sh --start
+```
+
+Hadoop:
+```
+sudo su - hadoop
+start-dfs.sh
+```
+```
+hdfs dfsadmin -report
+jps
+```
+```
+hdfs dfs -ls /pipelines-data/
+hdfs dfs -copyFromLocal -p /data/migration/target/dr91 /pipelines-data/
+hdfs dfs -copyFromLocal -p * /pipelines-data/
+hdfs dfs -rm -r  /pipelines-data/dr37
+hdfs dfs -copyToLocal /pipelines-data/dr37/1/latlng/latlng.csv /tmp
+```
+
