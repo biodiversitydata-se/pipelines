@@ -78,7 +78,7 @@ public class TemporalInterpreter implements Serializable {
     // Interpret as a range, taking into account all DWC event date parameters
     OccurrenceParseResult<IsoDateInterval> parseResult =
         temporalRangeParser.parse(
-                year, month, day, normalizedEventDate, startDayOfYear, endDayOfYear);
+            year, month, day, normalizedEventDate, startDayOfYear, endDayOfYear);
 
     Optional<TemporalAccessor> fromTa =
         Optional.ofNullable(parseResult.getPayload()).map(IsoDateInterval::getFrom);
