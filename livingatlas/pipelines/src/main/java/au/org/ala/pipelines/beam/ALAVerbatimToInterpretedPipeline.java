@@ -17,6 +17,7 @@ import au.org.ala.pipelines.transforms.ALAMetadataTransform;
 import au.org.ala.pipelines.transforms.ALATaxonomyTransform;
 import au.org.ala.pipelines.transforms.ALATemporalTransform;
 import au.org.ala.pipelines.transforms.LocationTransform;
+import au.org.ala.pipelines.util.RecordedDateValidator;
 import au.org.ala.pipelines.util.VersionInfo;
 import au.org.ala.utils.ArchiveUtils;
 import au.org.ala.utils.CombinedYamlConfiguration;
@@ -37,10 +38,12 @@ import org.apache.beam.sdk.values.PCollection;
 import org.apache.beam.sdk.values.PCollectionView;
 import org.gbif.api.model.pipelines.StepType;
 import org.gbif.common.parsers.date.DateComponentOrdering;
+import org.gbif.common.parsers.date.MultiinputTemporalParser;
 import org.gbif.dwc.terms.DwcTerm;
 import org.gbif.pipelines.common.beam.metrics.MetricsHandler;
 import org.gbif.pipelines.common.beam.options.PipelinesOptionsFactory;
 import org.gbif.pipelines.common.beam.utils.PathBuilder;
+import org.gbif.pipelines.core.functions.SerializableFunction;
 import org.gbif.pipelines.core.pojo.HdfsConfigs;
 import org.gbif.pipelines.core.utils.FsUtils;
 import org.gbif.pipelines.factory.FileVocabularyFactory;
@@ -189,8 +192,10 @@ public class ALAVerbatimToInterpretedPipeline {
 
     VerbatimTransform verbatimTransform = VerbatimTransform.create();
 
+    SerializableFunction<String, String> preprocessDateFn =
+            new RecordedDateValidator(MultiinputTemporalParser.create(dateComponentOrdering));
     ALATemporalTransform temporalTransform =
-        ALATemporalTransform.builder().orderings(dateComponentOrdering).create();
+        ALATemporalTransform.builder().orderings(dateComponentOrdering).preprocessDateFn(preprocessDateFn).create();
 
     // Extension
     MultimediaTransform multimediaTransform =
@@ -262,10 +267,10 @@ public class ALAVerbatimToInterpretedPipeline {
         .apply("Check verbatim transform condition", verbatimTransform.check(types))
         .apply("Write verbatim to avro", verbatimTransform.write(pathFn));
 
-    uniqueRecords
-        .apply("Check basic transform condition", basicTransform.check(types))
-        .apply("Interpret basic", basicTransform.interpret())
-        .apply("Write basic to avro", basicTransform.write(pathFn));
+//    uniqueRecords
+//        .apply("Check basic transform condition", basicTransform.check(types))
+//        .apply("Interpret basic", basicTransform.interpret())
+//        .apply("Write basic to avro", basicTransform.write(pathFn));
 
     uniqueRecords
         .apply("Check temporal transform condition", temporalTransform.check(types))

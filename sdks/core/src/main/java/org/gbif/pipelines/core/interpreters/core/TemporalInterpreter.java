@@ -85,25 +85,25 @@ public class TemporalInterpreter implements Serializable {
     } catch (Exception e) {
       log.error("id: "+er.getId());
       log.error("coreId: "+er.getCoreId());
-      log.error("year: " + year);
-      log.error("month: " + month);
-      log.error("day: " + day);
-      log.error("startDayOfYear: " + startDayOfYear);
-      log.error("endDayOfYear: " + endDayOfYear);
-      log.error("eventDate: " + eventDate);
-      log.error("normalizedEventDate: " + normalizedEventDate);
+//      log.error("year: " + year);
+//      log.error("month: " + month);
+//      log.error("day: " + day);
+//      log.error("startDayOfYear: " + startDayOfYear);
+//      log.error("endDayOfYear: " + endDayOfYear);
+//      log.error("eventDate: " + eventDate);
+//      log.error("normalizedEventDate: " + normalizedEventDate);
 
       String[] rawPeriod = DelimiterUtils.splitPeriod(normalizedEventDate);
-      log.error("rawPeriod0: " + rawPeriod[0]);
-      log.error("rawPeriod1: " + rawPeriod[1]);
+//      log.error("rawPeriod0: " + rawPeriod[0]);
+//      log.error("rawPeriod1: " + rawPeriod[1]);
 
       OccurrenceParseResult dateRangeOnlyStart = this.temporalParser.parseRecordedDate((String)null, (String)null, (String)null, rawPeriod[0], (String)null);
       OccurrenceParseResult dateRangeOnlyEnd = this.temporalParser.parseRecordedDate((String)null, (String)null, (String)null, rawPeriod[1], (String)null);
       OccurrenceParseResult ymdOnly = this.temporalParser.parseRecordedDate(year, month, day, (String)null, (String)null);
 
-      log.error("dateRangeOnlyStart: " + dateRangeOnlyStart.getPayload());
-      log.error("dateRangeOnlyEnd: " + dateRangeOnlyEnd.getPayload());
-      log.error("ymdOnly: " + ymdOnly.getPayload());
+//      log.error("dateRangeOnlyStart: " + dateRangeOnlyStart.getPayload());
+//      log.error("dateRangeOnlyEnd: " + dateRangeOnlyEnd.getPayload());
+//      log.error("ymdOnly: " + ymdOnly.getPayload());
 
       //from = this.parseAndSet((String)null, (String)null, (String)null, rawPeriod[0], startDayOfYear, issues);
       //to = this.parseAndSet((String)null, (String)null, (String)null, rawPeriod[1], endDayOfYear, issues);
