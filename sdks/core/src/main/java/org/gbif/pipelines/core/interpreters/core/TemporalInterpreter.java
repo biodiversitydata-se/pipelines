@@ -23,7 +23,6 @@ import org.gbif.common.parsers.date.DateComponentOrdering;
 import org.gbif.common.parsers.date.MultiinputTemporalParser;
 import org.gbif.common.parsers.date.TemporalAccessorUtils;
 import org.gbif.common.parsers.date.TemporalRangeParser;
-import org.gbif.common.parsers.utils.DelimiterUtils;
 import org.gbif.dwc.terms.DcTerm;
 import org.gbif.dwc.terms.DwcTerm;
 import org.gbif.pipelines.core.functions.SerializableFunction;
@@ -77,46 +76,9 @@ public class TemporalInterpreter implements Serializable {
         Optional.ofNullable(preprocessDateFn).map(x -> x.apply(eventDate)).orElse(eventDate);
 
     // Interpret as a range, taking into account all DWC event date parameters
-    OccurrenceParseResult<IsoDateInterval> parseResult;
-    try {
-      parseResult =
-              temporalRangeParser.parse(
-                      year, month, day, normalizedEventDate, startDayOfYear, endDayOfYear);
-    } catch (Exception e) {
-      log.error("id: "+er.getId());
-      log.error("coreId: "+er.getCoreId());
-//      log.error("year: " + year);
-//      log.error("month: " + month);
-//      log.error("day: " + day);
-//      log.error("startDayOfYear: " + startDayOfYear);
-//      log.error("endDayOfYear: " + endDayOfYear);
-//      log.error("eventDate: " + eventDate);
-//      log.error("normalizedEventDate: " + normalizedEventDate);
-
-      String[] rawPeriod = DelimiterUtils.splitPeriod(normalizedEventDate);
-//      log.error("rawPeriod0: " + rawPeriod[0]);
-//      log.error("rawPeriod1: " + rawPeriod[1]);
-
-      OccurrenceParseResult dateRangeOnlyStart = this.temporalParser.parseRecordedDate((String)null, (String)null, (String)null, rawPeriod[0], (String)null);
-      OccurrenceParseResult dateRangeOnlyEnd = this.temporalParser.parseRecordedDate((String)null, (String)null, (String)null, rawPeriod[1], (String)null);
-      OccurrenceParseResult ymdOnly = this.temporalParser.parseRecordedDate(year, month, day, (String)null, (String)null);
-
-//      log.error("dateRangeOnlyStart: " + dateRangeOnlyStart.getPayload());
-//      log.error("dateRangeOnlyEnd: " + dateRangeOnlyEnd.getPayload());
-//      log.error("ymdOnly: " + ymdOnly.getPayload());
-
-      //from = this.parseAndSet((String)null, (String)null, (String)null, rawPeriod[0], startDayOfYear, issues);
-      //to = this.parseAndSet((String)null, (String)null, (String)null, rawPeriod[1], endDayOfYear, issues);
-      OccurrenceParseResult<TemporalAccessor> from = this.temporalParser.parseRecordedDate((String)null, (String)null, (String)null, rawPeriod[0], startDayOfYear);
-      OccurrenceParseResult<TemporalAccessor> to = this.temporalParser.parseRecordedDate((String)null, (String)null, (String)null, rawPeriod[1], endDayOfYear);
-
-      log.error("from: " + from.getPayload());
-      log.error("from class: " + from.getPayload().getClass());
-      log.error("to: " + to.getPayload());
-      log.error("to class: " + to.getPayload().getClass());
-
-      throw(e);
-    }
+    OccurrenceParseResult<IsoDateInterval> parseResult =
+        temporalRangeParser.parse(
+                year, month, day, normalizedEventDate, startDayOfYear, endDayOfYear);
 
     Optional<TemporalAccessor> fromTa =
         Optional.ofNullable(parseResult.getPayload()).map(IsoDateInterval::getFrom);

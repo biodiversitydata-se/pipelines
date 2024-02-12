@@ -195,7 +195,10 @@ public class ALAVerbatimToInterpretedPipeline {
     SerializableFunction<String, String> preprocessDateFn =
             new RecordedDateValidator(MultiinputTemporalParser.create(dateComponentOrdering));
     ALATemporalTransform temporalTransform =
-        ALATemporalTransform.builder().orderings(dateComponentOrdering).preprocessDateFn(preprocessDateFn).create();
+        ALATemporalTransform.builder()
+                .orderings(dateComponentOrdering)
+                .preprocessDateFn(preprocessDateFn)
+                .create();
 
     // Extension
     MultimediaTransform multimediaTransform =
@@ -267,10 +270,10 @@ public class ALAVerbatimToInterpretedPipeline {
         .apply("Check verbatim transform condition", verbatimTransform.check(types))
         .apply("Write verbatim to avro", verbatimTransform.write(pathFn));
 
-//    uniqueRecords
-//        .apply("Check basic transform condition", basicTransform.check(types))
-//        .apply("Interpret basic", basicTransform.interpret())
-//        .apply("Write basic to avro", basicTransform.write(pathFn));
+    uniqueRecords
+        .apply("Check basic transform condition", basicTransform.check(types))
+        .apply("Interpret basic", basicTransform.interpret())
+        .apply("Write basic to avro", basicTransform.write(pathFn));
 
     uniqueRecords
         .apply("Check temporal transform condition", temporalTransform.check(types))

@@ -20,6 +20,7 @@ public class RecordedDateValidator implements SerializableFunction<String, Strin
 
     @Override
     public String apply(String eventDate) {
+        String result = eventDate;
         String[] rawPeriod = DelimiterUtils.splitPeriod(eventDate);
         TemporalAccessor from =
                 temporalParser.parseRecordedDate(null, null, null, rawPeriod[0], null).getPayload();
@@ -29,18 +30,21 @@ public class RecordedDateValidator implements SerializableFunction<String, Strin
         if (from.getClass().equals(LocalDate.class) && to.getClass().equals(ZonedDateTime.class)) {
             LocalDate fromDate = (LocalDate)from;
             ZonedDateTime toDatetime = (ZonedDateTime)to;
-
-//            log.warn("1: " + fromDate.atStartOfDay(toDatetime.getZone()));
-//            log.warn("2: " + fromDate.atTime(LocalTime.MIDNIGHT).atZone(toDatetime.getZone()));
-//            log.warn("3: " + ZonedDateTime.of(fromDate, LocalTime.MIDNIGHT, toDatetime.getZone()));
-
             ZonedDateTime fromDatetime = fromDate.atStartOfDay(toDatetime.getZone());
-            String newEventDate = fromDatetime + "/" + rawPeriod[1];
-            log.info(eventDate + " => " + newEventDate);
-
-            return newEventDate;
+            result = fromDatetime + "/" + rawPeriod[1];
+        } else if (from.getClass().equals(ZonedDateTime.class) && to.getClass().equals(LocalDate.class)) {
+            ZonedDateTime fromDatetime = (ZonedDateTime)from;
+            LocalDate toDate = (LocalDate)to;
+            ZonedDateTime toDatetime = toDate.atStartOfDay(fromDatetime.getZone());
+            if (toDatetime.isBefore(fromDatetime)) {
+                toDatetime = toDatetime.plusDays(1);
+            }
+            result = rawPeriod[0] + "/" + toDatetime;
         }
 
-        return eventDate;
+        if (!eventDate.equals(result)) {
+            log.info(eventDate + " => " + result);
+        }
+        return result;
     }
 }
