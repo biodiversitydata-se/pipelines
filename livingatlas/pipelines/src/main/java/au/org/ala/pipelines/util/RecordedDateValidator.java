@@ -1,11 +1,12 @@
 package au.org.ala.pipelines.util;
 
 import lombok.extern.slf4j.Slf4j;
-import org.gbif.common.parsers.core.OccurrenceParseResult;
 import org.gbif.common.parsers.date.MultiinputTemporalParser;
 import org.gbif.common.parsers.utils.DelimiterUtils;
 import org.gbif.pipelines.core.functions.SerializableFunction;
 
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAccessor;
 
 @Slf4j
@@ -20,16 +21,25 @@ public class RecordedDateValidator implements SerializableFunction<String, Strin
     @Override
     public String apply(String eventDate) {
         String[] rawPeriod = DelimiterUtils.splitPeriod(eventDate);
-//        log.warn("rawPeriod0: " + rawPeriod[0]);
-//        log.warn("rawPeriod1: " + rawPeriod[1]);
+        TemporalAccessor from =
+                temporalParser.parseRecordedDate(null, null, null, rawPeriod[0], null).getPayload();
+        TemporalAccessor to =
+                temporalParser.parseRecordedDate(null, null, null, rawPeriod[1], null).getPayload();
 
-        OccurrenceParseResult<TemporalAccessor> dateRangeOnlyStart = this.temporalParser.parseRecordedDate((String)null, (String)null, (String)null, rawPeriod[0], (String)null);
-        OccurrenceParseResult<TemporalAccessor> dateRangeOnlyEnd = this.temporalParser.parseRecordedDate((String)null, (String)null, (String)null, rawPeriod[1], (String)null);
+        if (from.getClass().equals(LocalDate.class) && to.getClass().equals(ZonedDateTime.class)) {
+            LocalDate fromDate = (LocalDate)from;
+            ZonedDateTime toDatetime = (ZonedDateTime)to;
 
-//        log.warn("dateRangeOnlyStart: " + dateRangeOnlyStart.getPayload());
-//        log.warn("dateRangeOnlyStart: " + dateRangeOnlyStart.getPayload().getClass());
-//        log.warn("dateRangeOnlyEnd: " + dateRangeOnlyEnd.getPayload());
-//        log.warn("dateRangeOnlyEnd: " + dateRangeOnlyEnd.getPayload().getClass());
+//            log.warn("1: " + fromDate.atStartOfDay(toDatetime.getZone()));
+//            log.warn("2: " + fromDate.atTime(LocalTime.MIDNIGHT).atZone(toDatetime.getZone()));
+//            log.warn("3: " + ZonedDateTime.of(fromDate, LocalTime.MIDNIGHT, toDatetime.getZone()));
+
+            ZonedDateTime fromDatetime = fromDate.atStartOfDay(toDatetime.getZone());
+            String newEventDate = fromDatetime + "/" + rawPeriod[1];
+            log.info(eventDate + " => " + newEventDate);
+
+            return newEventDate;
+        }
 
         return eventDate;
     }
