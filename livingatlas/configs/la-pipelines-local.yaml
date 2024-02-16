@@ -17,6 +17,7 @@ speciesListService:
   wsUrl: https://lists.biodiversitydata.se
 samplingService:
   wsUrl: https://spatial.biodiversitydata.se/ws/
+  batchStatusSleepTime: 10000
 index:
   includeImages: false
 solr:
