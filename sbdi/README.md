@@ -29,7 +29,7 @@ This is an adapted version of [Getting started in livingatlas/README.md](../livi
     wget -O /data/pipelines-vocabularies/LifeStage.json "https://api.gbif.org/v1/vocabularies/LifeStage/releases/LATEST/export"
     wget -O /data/pipelines-vocabularies/Pathway.json "https://api.gbif.org/v1/vocabularies/Pathway/releases/LATEST/export"
     ```
-1. Build:
+1. Build jar-file:
    ```
    make build
    ```
@@ -48,7 +48,7 @@ This is an adapted version of [Getting started in livingatlas/README.md](../livi
     docker-compose -f pipelines/src/main/docker/ala-sensitive-data-service.yml up -d
     ```
 1. `cd livingatlas/scripts`
-1. To download from Collectory, run `./la-pipelines copy dr15`. File is saved to `/data/biocache-load`
+1. To download from Collectory, run `./la-pipelines copy dr15`. File is saved to `/data/dwca-export`
 1. To convert DwCA to AVRO, run `./la-pipelines dwca-avro dr15`
 1. To interpret, run `./la-pipelines interpret dr15 --embedded`
 1. To mint UUIDs, run `./la-pipelines uuid dr15 --embedded`
@@ -136,6 +136,7 @@ spark-cluster.sh --start
 Hadoop:
 ```
 sudo su - hadoop
+stop-dfs.sh
 start-dfs.sh
 ```
 ```
@@ -144,9 +145,16 @@ jps
 ```
 ```
 hdfs dfs -ls /pipelines-data/
+hdfs dfs -ls /pipelines-data/dr5/1
+hdfs dfs -rm /pipelines-data/dr5/1/indexing-metrics.yml
+hdfs dfs -rm -r  /pipelines-data/dr5
+
+hdfs dfs -ls /pipelines-all-datasets/index-record
+hdfs dfs -rm -r /pipelines-all-datasets/index-record/dr5
+
 hdfs dfs -copyFromLocal -p /data/migration/target/dr91 /pipelines-data/
 hdfs dfs -copyFromLocal -p * /pipelines-data/
-hdfs dfs -rm -r  /pipelines-data/dr37
+
 hdfs dfs -copyToLocal /pipelines-data/dr37/1/latlng/latlng.csv /tmp
 ```
 

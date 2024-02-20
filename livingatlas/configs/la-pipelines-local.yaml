@@ -1,5 +1,6 @@
-copy:
-  copyPath: /data/biocache-load
+dwca-avro:
+  inputPath: /data/dwca-export/{datasetId}/{datasetId}.zip
+  tempLocation: /data/dwca-export/{datasetId}/tmp/
 alaNameMatch:
   wsUrl: https://namematching.biodiversitydata.se/
 sds:
@@ -41,3 +42,5 @@ locationInfoConfig:
     stateProvinceNamesFile : /data/pipelines-data/resources/stateProvinces.tsv
 recordedByConfig:
   cacheSizeMb: 1000000
+#sampling:
+#  keepLatLngExports: true
