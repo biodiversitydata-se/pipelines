@@ -4,7 +4,7 @@ dwca-avro:
 alaNameMatch:
   wsUrl: https://namematching.biodiversitydata.se/
 sds:
-  wsUrl: http://localhost:9189
+  wsUrl: https://sensitive.biodiversitydata.se/
 collectory:
   wsUrl: https://collections.biodiversitydata.se/ws/
   httpHeaders:

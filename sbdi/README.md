@@ -43,10 +43,6 @@ This is an adapted version of [Getting started in livingatlas/README.md](../livi
        ```
 
 ### Running la-pipelines
-1. Start required docker containers using
-    ```bash
-    docker-compose -f pipelines/src/main/docker/ala-sensitive-data-service.yml up -d
-    ```
 1. `cd livingatlas/scripts`
 1. To download from Collectory, run `./la-pipelines copy dr15`. File is saved to `/data/dwca-export`
 1. To convert DwCA to AVRO, run `./la-pipelines dwca-avro dr15`
@@ -72,8 +68,9 @@ Run pipelines as the `spark` user.
 
 Use `sbdi-load` (/usr/bin/sbdi-load) to run all the pipeline steps for a single dataset:
 ```
-sbdi-load dr11 > /data/log/dr11.log 2>&1
+sbdi-load dr11
 ```
+A log file will be created in `/data/log/dr11`
 
 `sbdi-load` runs the following pipeline steps:
 - copy
@@ -87,7 +84,7 @@ sbdi-load dr11 > /data/log/dr11.log 2>&1
 
 Use `la-pipelines` (/usr/bin/la-pipelines) to run single pipeline steps:
 ```
-la-pipelines interpret dr11 > /data/log/dr11-interpret.log 2>&1
+la-pipelines interpret dr11 > /data/log/dr11/$(date +%y%m%d-%H%M%S)cd.log 2>&1
 ```
 
 ### Monitoring
