@@ -5,6 +5,7 @@ set -e
 
 SECONDS=0
 dr=$1
+image_flag=$2
 dr_data=/data/pipelines-data/$dr/1
 scriptpath="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -14,10 +15,9 @@ $scriptpath/la-pipelines interpret $dr --embedded
 $scriptpath/la-pipelines uuid $dr --embedded
 $scriptpath/la-pipelines sds $dr --embedded
 #if grep -q multimediaRecordsCountAttempted "$dr_data/interpretation-metrics.yml"; then
-#  $scriptpath/la-pipelines image-load $dr --embedded
-#  $scriptpath/la-pipelines image-sync $dr --embedded
-#fi
-if [ ! -d "$dr_data/images" ]; then
+if [ "$image_flag" = "--load-images" ]; then
+  $scriptpath/la-pipelines image-load $dr --embedded
+  $scriptpath/la-pipelines image-sync $dr --embedded
   extra_args_index="--extra-args=includeImages=true"
 fi
 $scriptpath/la-pipelines index $dr --embedded $extra_args_index

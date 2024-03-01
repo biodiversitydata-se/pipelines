@@ -72,19 +72,26 @@ sbdi-load dr11
 ```
 A log file will be created in `/data/log/dr11`
 
+To also load images:
+```
+sbdi-load dr11 --load-images
+```
+
 `sbdi-load` runs the following pipeline steps:
 - copy
 - dwca-avro
 - interpret
 - uuid
 - sds
+- image-load (only if run with `--load-images`)
+- image-sync (only if run with `--load-images`)
 - index
 - sample
 - solr
 
 Use `la-pipelines` (/usr/bin/la-pipelines) to run single pipeline steps:
 ```
-la-pipelines interpret dr11 > /data/log/dr11/$(date +%y%m%d-%H%M%S)cd.log 2>&1
+la-pipelines interpret dr11 > /data/log/dr11/$(date +%y%m%d-%H%M%S).log 2>&1
 ```
 
 ### Monitoring
