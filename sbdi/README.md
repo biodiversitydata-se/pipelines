@@ -63,6 +63,8 @@ There are currently one manager node (live-pipelines-1) and six worker nodes (li
 
 The solr cloud consist of three nodes (live-solrcloud-1, -2 and -3).
 
+See *pipelines* and *solrcloud* roles in [sbdi-install](https://github.com/biodiversitydata-se/sbdi-install) for information on how to install and manage pipelines.
+
 ### Running pipelines
 Run pipelines as the `spark` user.
 
@@ -70,7 +72,6 @@ Use `sbdi-load` (/usr/bin/sbdi-load) to run all the pipeline steps for a single 
 ```
 sbdi-load dr11
 ```
-A log file will be created in `/data/log/dr11`
 
 To also load images:
 ```
@@ -93,6 +94,11 @@ Use `la-pipelines` (/usr/bin/la-pipelines) to run single pipeline steps:
 ```
 la-pipelines interpret dr11 > /data/log/dr11/$(date +%y%m%d-%H%M%S).log 2>&1
 ```
+
+### Logs
+When you run `sbdi-load` a log file will be created in `/data/log/dr[X]`.
+
+Each spark worker node (live-pipelines-2 - live-pipelines-7) also creates a log for every spark application it runs. The logs can be found in `/data/spark/work`. This directory also contains a copy of the jar-file used. The size of this directory can grow quickly when many datasets are loaded. There is an ansible task in [sbdi-install](https://github.com/biodiversitydata-se/sbdi-install) to clear it out on all nodes.  
 
 ### Monitoring
 
@@ -130,14 +136,14 @@ ssh -L 4040:127.0.0.1:4040 live-pipelines-1
 
 ### Useful commands
 
-Spark:
+#### Spark
 ```
 sudo su - spark
 spark-cluster.sh --stop
 spark-cluster.sh --start
 ```
 
-Hadoop:
+#### Hadoop
 ```
 sudo su - hadoop
 stop-dfs.sh
@@ -162,3 +168,19 @@ hdfs dfs -copyFromLocal -p * /pipelines-data/
 hdfs dfs -copyToLocal /pipelines-data/dr37/1/latlng/latlng.csv /tmp
 ```
 
+#### Solr
+
+Remove all entries for a dataset:  
+https://stackoverflow.com/questions/23228727/deleting-solr-documents-from-solr-admin/48007194#48007194
+
+```
+<delete><query>dataResourceUid:dr18</query></delete>
+```
+
+### Backup
+The unique identifiers for each dataset are stored on hadoop in `/pipelines-data/dr[X]/1/identifiers`. There is also a backup on `live-pipelines-1:/data/backup/pipelines-data`. To backup the identifiers for a dataset run this command:
+```
+backup-dr dr0
+```
+
+The identifiers and the log directory is also copied (manually) to `nrm-sbdibackup`.
