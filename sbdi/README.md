@@ -2,7 +2,7 @@
 This is an adapted version of [Getting started in livingatlas/README.md](../livingatlas/README.md#Getting+started). 
 
 ### Software requirements:
-* Java 8 - this is mandatory (see [GBIF pipelines documentation](https://github.com/gbif/pipelines#about-the-project)) (`sdk use java 8.0.392-tem`)
+* Java 8 - this is mandatory (see [GBIF pipelines documentation](https://github.com/gbif/pipelines#about-the-project)) (`sdk use java 8.0.402-tem`)
 * Maven needs to run with OpenSDK 1.8
   'nano ~/.mavenrc' add 'export JAVA_HOME=[JDK1.8 PATH]'
 * [Docker Desktop](https://www.docker.com/products/docker-desktop) or just plain Docker
@@ -66,7 +66,7 @@ The solr cloud consist of three nodes (live-solrcloud-1, -2 and -3).
 See *pipelines* and *solrcloud* roles in [sbdi-install](https://github.com/biodiversitydata-se/sbdi-install) for information on how to install and manage pipelines.
 
 ### Running pipelines
-Run pipelines as the `spark` user.
+Run pipelines as the `spark` user. A recommendation is to use Linux [screen command](https://www.gnu.org/software/screen/manual/screen.html), especially when loading large datasets.  
 
 Use `sbdi-load` (/usr/bin/sbdi-load) to run all the pipeline steps for a single dataset:
 ```
@@ -94,6 +94,8 @@ Use `la-pipelines` (/usr/bin/la-pipelines) to run single pipeline steps:
 ```
 la-pipelines interpret dr11 > /data/log/dr11/$(date +%y%m%d-%H%M%S).log 2>&1
 ```
+
+There is also a script for loading ALL datasets in one go: `load-all` (/usr/bin/load-all). Normally it is not run "as is" but it can be used as a template to load the majority of the datasets if you comment out or remove the datasets you want to skip or load manually.  
 
 ### Logs
 When you run `sbdi-load` a log file will be created in `/data/log/dr[X]`.
