@@ -136,6 +136,31 @@ SparkContext (only available when Spark is executing tasks):
 ssh -L 4040:127.0.0.1:4040 live-pipelines-1
 ```
 
+### Deleting removed records in SOLR
+Pipelines don't handle removal of records from SOLR. If records have been removed from the source dataset they need to be removed manually from SOLR.
+
+Datasets having too many records in the Atlas can be found in the [IPT vs Atlas view](https://collections.biodiversitydata.se/ipt/syncView?uid=dp0&sort=title&order=asc&onlyUnsynced=true) in the Collectory.
+
+The specific records can be found with the following SOLR query (using the AND operator). Don't forget to adjust the dates.
+```
+dataResourceUid:dr964
+lastLoadDate:[2024-01-01T00:00:00Z TO 2024-04-01T00:00:00Z]
+```
+
+They can be [deleted](https://medium.com/@mgasanthosh/solr-deleting-the-document-3c6a6046a1f6) with the same query:
+```
+<delete>
+ <query>
+  (dataResourceUid:dr964) AND (lastLoadDate:[2024-01-01T00:00:00Z TO 2024-04-01T00:00:00Z])
+ </query>
+</delete>
+```
+
+### Other things to watch
+* Spark accumulates data in `/data/spark/work` on the worker nodes. This has been addressed by setting `spark.worker.cleanup.enabled=true` but it hasn't been tested yet.
+* The docker services accumulate data in `/var/lib/docker/container` which may fill up the root volume. This data is cleared when the docker services are stopped and removed.  
+* So far, all the pipelines machines have been restarted before running Artportalen. This is to clear up memory used by the docker services (and possibly other stuff).
+
 ### Useful commands
 
 #### Spark
@@ -172,8 +197,9 @@ hdfs dfs -copyToLocal /pipelines-data/dr37/1/latlng/latlng.csv /tmp
 
 #### Solr
 
-Remove all entries for a dataset:  
-https://stackoverflow.com/questions/23228727/deleting-solr-documents-from-solr-admin/48007194#48007194
+Remove all entries for a dataset:
+* https://medium.com/@mgasanthosh/solr-deleting-the-document-3c6a6046a1f6
+* https://stackoverflow.com/questions/23228727/deleting-solr-documents-from-solr-admin/48007194#48007194
 
 ```
 <delete><query>dataResourceUid:dr18</query></delete>
