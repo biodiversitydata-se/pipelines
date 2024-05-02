@@ -180,9 +180,15 @@ https://stackoverflow.com/questions/23228727/deleting-solr-documents-from-solr-a
 ```
 
 ### Backup
-The unique identifiers for each dataset are stored on hadoop in `/pipelines-data/dr[X]/1/identifiers`. There is also a backup on `live-pipelines-1:/data/backup/pipelines-data`. To backup the identifiers for a dataset run this command:
+The unique identifiers for each dataset are stored on hadoop in `/pipelines-data/dr[X]/1/identifiers`. There is also a backup on `live-pipelines-1:/data/backup/pipelines-data`. 
+
+To backup the identifiers for a dataset run this command (as the `ubuntu` user):
 ```
 backup-dr dr0
 ```
+For all datasets:
+```
+backup-all > /data/backup/$(date +%y%m%d-%H%M%S).log 2>&1
+```
 
-The identifiers and the log directory is also copied (manually) to `nrm-sbdibackup`.
+The identifiers and the log directory are also copied (manually) to `nrm-sbdibackup`.
