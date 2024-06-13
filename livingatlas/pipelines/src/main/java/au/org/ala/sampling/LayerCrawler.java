@@ -7,6 +7,7 @@ import au.org.ala.pipelines.options.SamplingPipelineOptions;
 import au.org.ala.utils.ALAFsUtils;
 import au.org.ala.utils.CombinedYamlConfiguration;
 import java.io.*;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
@@ -222,10 +223,20 @@ public class LayerCrawler {
       String batchId = submit.body().getBatchId();
 
       String state = UNKNOWN_STATUS;
+      int consecutiveTimeoutCount = 0;
       while (!state.equalsIgnoreCase(FINISHED_STATUS) && !state.equalsIgnoreCase(ERROR_STATUS)) {
-        Response<SamplingService.BatchStatus> status = service.getBatchStatus(batchId).execute();
-        SamplingService.BatchStatus batchStatus = status.body();
-        state = batchStatus.getStatus();
+        SamplingService.BatchStatus batchStatus = null;
+        try {
+          Response<SamplingService.BatchStatus> status = service.getBatchStatus(batchId).execute();
+          batchStatus = status.body();
+          state = batchStatus.getStatus();
+          consecutiveTimeoutCount = 0;
+        } catch (SocketTimeoutException e) {
+          log.warn("Timeout when fetching status: {}", ++consecutiveTimeoutCount);
+          if (consecutiveTimeoutCount == 5) {
+            throw (e);
+          }
+        }
 
         Instant batchCurrentTime = Instant.now();
 
