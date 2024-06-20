@@ -215,10 +215,10 @@ public class CollectorNameParser {
       }
     }
 
-    if (source.matches(EMAIL_PATTERN)) {
-      log.debug(source + ": EMAIL_PATTERN");
-      return source;
-    }
+    //if (source.matches(EMAIL_PATTERN)) {
+    //  log.debug(source + ": EMAIL_PATTERN");
+    //  return source;
+    //}
 
     if (source.matches(SINGLE_NAME_PATTERN)) {
       log.debug(source + ": SINGLE_NAME_PATTERN");
