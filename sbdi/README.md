@@ -141,13 +141,18 @@ Pipelines don't handle removal of records from SOLR. If records have been remove
 
 Datasets having too many records in the Atlas can be found in the [IPT vs Atlas view](https://collections.biodiversitydata.se/ipt/syncView?uid=dp0&sort=title&order=asc&onlyUnsynced=true) in the Collectory.
 
-The specific records can be found with the following SOLR query (using the AND operator). Don't forget to adjust the dates.
+The specific records can be found with the following SOLR query (using the AND operator). Don't forget to adjust the TO date. The TO should be something like the day before the last load date. 
 ```
 dataResourceUid:dr964
 lastLoadDate:[2024-01-01T00:00:00Z TO 2024-04-01T00:00:00Z]
 ```
 
-They can be [deleted](https://medium.com/@mgasanthosh/solr-deleting-the-document-3c6a6046a1f6) with the same query:
+They can be deleted using the following script:
+```
+delete-deleted-records dr964 2024-04-01
+```
+
+~~They can be [deleted](https://medium.com/@mgasanthosh/solr-deleting-the-document-3c6a6046a1f6) with the same query:~~
 ```
 <delete>
  <query>
