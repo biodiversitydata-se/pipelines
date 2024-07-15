@@ -56,7 +56,7 @@ This is an adapted version of [Getting started in livingatlas/README.md](../livi
 1. To sample, run `./la-pipelines sample dr15 --embedded`
 1. To generate the SOLR index, run `./la-pipelines solr dr15 --embedded` (If the dataset lacks sampling info, run: `./la-pipelines solr dr15 --embedded --extra-args=includeSampling=false`)
 
-To run steps 3-11 in one go use the [sbdi-load](../livingatlas/scripts/sbdi-load) script.
+To run steps 2-10 in one go use the [sbdi-load](../livingatlas/scripts/sbdi-load) script.
 
 ## Production
 There are currently one manager node (live-pipelines-1) and six worker nodes (live-pipelines-2 - live-pipelines-7) for running pipelines. 
