@@ -141,7 +141,7 @@ Pipelines don't handle removal of records from SOLR. If records have been remove
 
 Datasets having too many records in the Atlas can be found in the [IPT vs Atlas view](https://collections.biodiversitydata.se/ipt/syncView?uid=dp0&sort=title&order=asc&onlyUnsynced=true) in the Collectory.
 
-The specific records can be found with the following SOLR query (using the AND operator). Don't forget to adjust the TO date. The TO should be something like the day before the last load date. 
+The specific records can be found with the following SOLR query (using the AND operator). Don't forget to adjust the TO date. The TO should be something like the day before the current date.
 ```
 dataResourceUid:dr964
 lastLoadDate:[2024-01-01T00:00:00Z TO 2024-04-01T00:00:00Z]
@@ -162,9 +162,9 @@ delete-deleted-records dr964 2024-04-01
 ```
 
 ### Other things to watch
-* Spark accumulates data in `/data/spark/work` on the worker nodes. This has been addressed by setting `spark.worker.cleanup.enabled=true` but it hasn't been tested yet.
-* The docker services accumulate data in `/var/lib/docker/container` which may fill up the root volume. This data is cleared when the docker services are stopped and removed.  
-* So far, all the pipelines machines have been restarted before running Artportalen. This is to clear up memory used by the docker services (and possibly other stuff).
+* Spark accumulates data in `/data/spark/work` on the worker nodes. This has been addressed by setting `spark.worker.cleanup.enabled=true`.
+* The docker services accumulate data in `/var/lib/docker/containers` which may fill up the root volume. This data is cleared when the docker services are stopped and removed (they start again on reboot).
+* If Artportalen fails with random errors, try restarting all machines. This is to clear up memory used by the docker services (and possibly other stuff).
 
 ### Useful commands
 
