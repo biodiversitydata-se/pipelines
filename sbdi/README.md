@@ -89,6 +89,7 @@ sbdi-load dr11 --load-images
 - index
 - sample
 - solr
+- [backup of identifiers](#backup)
 
 Use `la-pipelines` (/usr/bin/la-pipelines) to run single pipeline steps:
 ```
@@ -211,9 +212,9 @@ Remove all entries for a dataset:
 ```
 
 ### Backup
-The unique identifiers for each dataset are stored on hadoop in `/pipelines-data/dr[X]/1/identifiers`. There is also a backup on `live-pipelines-1:/data/backup/pipelines-data`. 
+The unique identifiers for each dataset are stored on hadoop in `/pipelines-data/dr[X]/1/identifiers`. There is also a backup on `live-pipelines-1:/data/backup/pipelines-data`. Identifiers are copied to the backup directory as the last step in `sbdi-load`.
 
-To backup the identifiers for a dataset run this command (as the `ubuntu` user):
+To backup the identifiers manually for a dataset run this command (as the `spark` user):
 ```
 backup-dr dr0
 ```
@@ -222,4 +223,4 @@ For all datasets:
 backup-all > /data/backup/$(date +%y%m%d-%H%M%S).log 2>&1
 ```
 
-The identifiers and the log directory are also copied (manually) to `nrm-sbdibackup`.
+The identifiers and the log directory are also copied (manually by using the `backup-pipelines.sh` script) to `nrm-sbdibackup`.
