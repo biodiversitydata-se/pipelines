@@ -120,6 +120,7 @@ public class ALABasicTransform extends Transform<ExtendedRecord, BasicRecord> {
         .via(BasicInterpreter::interpretIdentifiedBy)
         .via(BasicInterpreter::interpretPreparations)
         .via((e, r) -> CoreInterpreter.interpretSamplingProtocol(e, r::setSamplingProtocol))
+        .via(BasicInterpreter::interpretAssociatedSequences)
         .via(BasicInterpreter::setCoreId)
         .getOfNullable();
   }
