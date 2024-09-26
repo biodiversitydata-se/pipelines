@@ -137,6 +137,22 @@ SparkContext (only available when Spark is executing tasks):
 ssh -L 4040:127.0.0.1:4040 live-pipelines-1
 ```
 
+### Deploy new pipelines jar-file
+The pipelines jar file is built on github and can be accessed as a workflow artifact. Follow these steps to deploy a newly built jar file.
+* Download artifact from the last workflow run: https://github.com/biodiversitydata-se/pipelines/actions
+* Unzip:
+  ```
+  unzip package.zip -d . 
+  ``` 
+* Upload to S3:
+  ```
+  s3cmd put -P pipelines-2.18.7-SNAPSHOT-shaded.jar s3://install/la-pipelines.jar 
+  ``` 
+* Deploy:
+  ```
+  ansible-playbook -i inventories/prod pipelines.yml -t pipelines-jar --ask-become-pass
+  ``` 
+
 ### Deleting removed records in SOLR
 Pipelines don't handle removal of records from SOLR. If records have been removed from the source dataset they need to be removed manually from SOLR.
 
