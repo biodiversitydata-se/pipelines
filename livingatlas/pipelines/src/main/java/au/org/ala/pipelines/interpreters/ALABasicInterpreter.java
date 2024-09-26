@@ -5,6 +5,7 @@ import static org.gbif.pipelines.core.utils.ModelUtils.extractOptValue;
 import au.org.ala.pipelines.parser.CollectorNameParser;
 import au.org.ala.pipelines.parser.LicenseParser;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
@@ -54,5 +55,14 @@ public class ALABasicInterpreter {
     } else {
       br.setLicense(License.UNSPECIFIED.name());
     }
+  }
+
+  public static void interpretAssociatedSequences(ExtendedRecord er, BasicRecord br) {
+    // Since AssociatedSequences unfortunately isn't a multivalued field in the Solr schema
+    // we don't attempt to split it into a list
+    extractOptValue(er, DwcTerm.associatedSequences)
+        .filter(x -> !x.isEmpty())
+        .map(Collections::singletonList)
+        .ifPresent(br::setAssociatedSequences);
   }
 }
