@@ -4,4 +4,4 @@ build:
 	mvn clean install -P skip-coverage,livingatlas-artifacts -pl '!gbif/ingestion/pre-backbone-release' -DskipTests -Dspotless.check.skip -nsu -T 1C
 
 build-ci:
-	mvn --batch-mode install -P skip-coverage,livingatlas-artifacts -pl '!gbif/ingestion/pre-backbone-release' -DskipTests -Dspotless.check.skip -nsu
+	mvn --batch-mode package -P skip-coverage,livingatlas-artifacts -pl '!gbif/ingestion/pre-backbone-release' -DskipITs -nsu
