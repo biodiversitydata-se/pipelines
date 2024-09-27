@@ -78,8 +78,9 @@ public class OccurrenceExtensionConverter {
         // Extract occurrenceID and use it as map key
         String occurrenceId = rawExtensionData.get(DwcTerm.occurrenceID.qualifiedName());
         // SBDI:
-        // If DwcTerm.occurrenceID is missing on the extension -> fallback to using occurrenceId from record.
-        // Datasets downloaded from GBIF (repatriated) do not include DwcTerm.occurrenceID on the multimedia extension.
+        // If DwcTerm.occurrenceID is missing on the extension -> fallback to using occurrenceId
+        // from record. Datasets downloaded from GBIF (repatriated) do not include
+        // DwcTerm.occurrenceID on the multimedia extension.
         if (occurrenceId == null) {
           occurrenceId = recordOccurrenceId;
         }
