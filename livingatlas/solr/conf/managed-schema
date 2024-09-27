@@ -368,7 +368,7 @@
   <field name="preparations"  type="string" docValues="true" indexed="true" multiValued="true"/>
   <field name="previousIdentifications"  type="string" docValues="true" indexed="true"/>
   <field name="recordNumber"  type="string" docValues="true" indexed="true"/>
-  <field name="recordedBy"  type="string" docValues="true" indexed="true"/>
+  <field name="recordedBy"  type="string" docValues="true" indexed="true" multiValued="true"/>
   <field name="relativeOrganismQuantity"  type="double" docValues="true" indexed="true"/>
   <field name="references"  type="string" docValues="true" indexed="true"/>
   <field name="relatedResourceID"  type="string" docValues="true" indexed="true"/>
@@ -649,6 +649,7 @@
   <field name="raw_occurrenceStatus"					 type="string"  docValues="true" indexed="true" />
   <field name="raw_order"					             type="string"  docValues="true" indexed="true" />
   <field name="raw_orderID"					             type="string"  docValues="true" indexed="true" />
+  <field name="raw_organismQuantity"					 type="string"  docValues="true" indexed="true" />
   <field name="raw_organismQuantityType"				 type="string"  docValues="true" indexed="true" />
   <field name="raw_original"					         type="string"  docValues="true" indexed="true" />
   <field name="raw_phylum"					             type="string"  docValues="true" indexed="true" />
@@ -660,6 +661,7 @@
   <field name="raw_publishingOrganizationKey"			 type="string"  docValues="true" indexed="true" />
   <field name="raw_taxonRank"					         type="string"  docValues="true" indexed="true" />
   <field name="raw_taxonRankID"					         type="string"  docValues="true" indexed="true" />
+  <field name="raw_recordedBy"					         type="string"  docValues="true" indexed="true" />
   <field name="raw_recordedByID"					     type="string"  docValues="true" indexed="true" />
   <field name="raw_references"					         type="string"  docValues="true" indexed="true" />
   <field name="raw_relativeOrganismQuantity"	         type="string"  docValues="true" indexed="true" />
@@ -749,6 +751,7 @@
   <copyField source="recordedBy" dest="text"/>
   <copyField source="identifiedBy" dest="text_identifiedBy"/>
   <copyField source="recordedBy" dest="text_recordedBy"/>
+  <copyField source="raw_recordedBy" dest="text_recordedBy"/>
   <copyField source="scientificName" dest="matched_name"/>
   <copyField source="scientificName" dest="text"/>
   <copyField source="species" dest="text"/>
