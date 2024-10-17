@@ -95,9 +95,7 @@ Use `la-pipelines` (/usr/bin/la-pipelines) to run single pipeline steps:
 ```
 la-pipelines interpret dr11 > /data/log/dr11/$(date +%y%m%d-%H%M%S).log 2>&1
 ```
-
-There is also a script for loading ALL datasets in one go: `load-all` (/usr/bin/load-all). Normally it is not run "as is" but it can be used as a template to load the majority of the datasets if you comment out or remove the datasets you want to skip or load manually.  
-
+There is also a script for loading datasets from a queue file: `load-queue`. The queue file is expected to be found at `/data/load-queue/queue.txt` and contain the datasets to be loaded on separate lines.
 ### Logs
 When you run `sbdi-load` a log file will be created in `/data/log/dr[X]`.
 
