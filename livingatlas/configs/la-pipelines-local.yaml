@@ -1,5 +1,6 @@
 dwca-avro:
   inputPath: /data/dwca-export/{datasetId}/{datasetId}.zip
+  #inputPath: /data/dwca-export/{datasetId}/tmp
   tempLocation: /data/dwca-export/{datasetId}/tmp/
 alaNameMatch:
   wsUrl: https://namematching.biodiversitydata.se/
@@ -7,6 +8,7 @@ sds:
   wsUrl: https://sensitive.biodiversitydata.se/
 collectory:
   wsUrl: https://collections.biodiversitydata.se/ws/
+  #wsUrl: http://localhost:8080/ws/
   httpHeaders:
     Authorization:
 imageService:
