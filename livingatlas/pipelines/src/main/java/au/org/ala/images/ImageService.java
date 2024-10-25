@@ -14,6 +14,9 @@ public interface ImageService {
   Call<BatchUploadResponse> upload(
       @Part("dataResourceUid") RequestBody dataResourceUid, @Part MultipartBody.Part file);
 
+  @GET("/ws/batch/status/{batchId}")
+  Call<BatchUploadResponse> status(@Path("batchId") String batchId);
+
   @GET("/ws/exportDataset/{dataResourceUid}")
   Call<ResponseBody> downloadMappingFile(@Path("dataResourceUid") String dataResourceUid);
 }

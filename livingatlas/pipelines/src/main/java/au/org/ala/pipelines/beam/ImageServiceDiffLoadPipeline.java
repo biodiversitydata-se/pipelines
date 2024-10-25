@@ -385,9 +385,11 @@ public class ImageServiceDiffLoadPipeline {
 
     if (!options.isAsyncUpload()) {
       log.info("Polling image service until complete...");
-      if (!batchUploadResponse.getStatus().equals("COMPLETE")) {
+      while (!batchUploadResponse.getStatus().equals("COMPLETE")) {
         log.info("Status " + batchUploadResponse.getStatus() + " sleeping....");
         TimeUnit.MILLISECONDS.sleep(options.getSleepTimeInMillis());
+        call = service.status(batchUploadResponse.getBatchID());
+        batchUploadResponse = SyncCall.syncCall(call);
       }
     } else {
       log.info("Async response received. Check image service dashboard to monitor progress");
