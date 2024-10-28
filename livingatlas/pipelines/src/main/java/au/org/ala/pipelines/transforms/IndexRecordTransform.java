@@ -485,7 +485,11 @@ public class IndexRecordTransform implements Serializable, IndexFields {
               .getStrings()
               .get(DcTerm.license.simpleName())
               .equals(License.UNSPECIFIED.name())) {
-        addIfNotEmpty(indexRecord, DcTerm.license.simpleName(), aar.getLicenseType());
+        String license =
+            StringUtils.defaultIfEmpty(aar.getLicenseType(), "")
+                + " "
+                + StringUtils.defaultIfEmpty(aar.getLicenseVersion(), "");
+        addIfNotEmpty(indexRecord, DcTerm.license.simpleName(), license.trim());
       }
 
       addIfNotEmpty(indexRecord, DATA_RESOURCE_UID, aar.getDataResourceUid());
