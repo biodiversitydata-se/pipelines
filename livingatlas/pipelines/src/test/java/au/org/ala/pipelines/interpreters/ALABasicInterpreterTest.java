@@ -46,7 +46,7 @@ public class ALABasicInterpreterTest {
   public void interpretLicenseTest() {
     // State
     Map<String, String> coreMap = new HashMap<>();
-    coreMap.put(DcTerm.license.qualifiedName(), " attribution nc.3.0 au");
+    coreMap.put(DcTerm.license.qualifiedName(), " attribution nc");
     ExtendedRecord er = ExtendedRecord.newBuilder().setId(ID).setCoreTerms(coreMap).build();
     BasicRecord br = BasicRecord.newBuilder().setId(ID).build();
 
@@ -54,6 +54,6 @@ public class ALABasicInterpreterTest {
     ALABasicInterpreter.interpretLicense(er, br);
 
     // Should
-    assertEquals("CC-BY-NC 3.0 (Au)", br.getLicense());
+    assertEquals("CC BY-NC 4.0", br.getLicense());
   }
 }
