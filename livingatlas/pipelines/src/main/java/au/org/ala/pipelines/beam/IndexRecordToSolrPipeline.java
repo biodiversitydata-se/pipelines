@@ -543,7 +543,8 @@ public class IndexRecordToSolrPipeline {
 
           c.output(KV.of(indexRecord.getId(), indexRecord));
         } else {
-          log.error("Join null for key " + e.getKey());
+          // SBDI: this seems to be part of the normal flow
+          // log.error("Join null for key " + e.getKey());
         }
       }
     };
