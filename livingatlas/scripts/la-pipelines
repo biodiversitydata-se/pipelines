@@ -754,38 +754,38 @@ function jackknife () {
     local dr="*" ltype="$TYPE"
     CLASS=au.org.ala.pipelines.beam.ALAReverseJackKnifePipeline
 
-    logStepStart "Jackknife" $dr
+    logStepStart "Jackknife" "$dr"
     SECONDS=0
 
     SH_ARGS=jackknife-sh-args.local
-    java-pipeline $ltype $SH_ARGS $CLASS $dr
+    java-pipeline $ltype $SH_ARGS $CLASS "$dr"
 
     SH_ARGS=jackknife-sh-args.spark-embedded
-    spark-embed-pipeline $ltype $SH_ARGS $CLASS $dr
+    spark-embed-pipeline $ltype $SH_ARGS $CLASS "$dr"
 
     SH_ARGS=jackknife-sh-args.spark-cluster
-    spark-cluster-pipeline $ltype $SH_ARGS $CLASS $dr "add-jackknife $dr"
+    spark-cluster-pipeline $ltype $SH_ARGS $CLASS "$dr" "add-jackknife $dr"
 
-    logStepEnd "Jackknife" $dr $ltype $SECONDS
+    logStepEnd "Jackknife" "$dr" $ltype $SECONDS
 }
 
 function clustering () {
     local dr="*" ltype="$TYPE"
     CLASS=au.org.ala.pipelines.beam.ClusteringPipeline
 
-    logStepStart "Clustering" $dr
+    logStepStart "Clustering" "$dr"
     SECONDS=0
 
     SH_ARGS=clustering-sh-args.local
-    java-pipeline $ltype $SH_ARGS $CLASS $dr
+    java-pipeline $ltype $SH_ARGS $CLASS "$dr"
 
     SH_ARGS=clustering-sh-args.spark-embedded
-    spark-embed-pipeline $ltype $SH_ARGS $CLASS $dr
+    spark-embed-pipeline $ltype $SH_ARGS $CLASS "$dr"
 
     SH_ARGS=clustering-sh-args.spark-cluster
-    spark-cluster-pipeline $ltype $SH_ARGS $CLASS $dr "add-clustering $dr"
+    spark-cluster-pipeline $ltype $SH_ARGS $CLASS "$dr" "add-clustering $dr"
 
-    logStepEnd "Clustering" $dr $ltype $SECONDS
+    logStepEnd "Clustering" "$dr" $ltype $SECONDS
 }
 
 function outlier () {
