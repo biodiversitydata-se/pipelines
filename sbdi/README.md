@@ -21,7 +21,12 @@ This is an adapted version of [Getting started in livingatlas/README.md](../livi
     mkdir -p /data/pipelines-data/resources
     ln -s /home/mats/src/biodiversitydata-se/pipelines/sbdi/stateProvinces.tsv /data/pipelines-data/resources/
     ```
-2. Download vocabularies:
+2. Create directory:
+    ```
+    mkdir /data/pipelines-clustering
+    mkdir /data/pipelines-jackknife
+    ```
+3. Download vocabularies:
     ```
     mkdir /data/pipelines-vocabularies
     wget -O /data/pipelines-vocabularies/DegreeOfEstablishment.json "https://api.gbif.org/v1/vocabularies/DegreeOfEstablishment/releases/LATEST/export"
@@ -57,6 +62,17 @@ This is an adapted version of [Getting started in livingatlas/README.md](../livi
 1. To generate the SOLR index, run `./la-pipelines solr dr15 --embedded` (If the dataset lacks sampling info, run: `./la-pipelines solr dr15 --embedded --extra-args=includeSampling=false`)
 
 To run steps 2-10 in one go use the [sbdi-load](../livingatlas/scripts/sbdi-load) script.
+
+#### Experimental
+Clustering is run on all indexed datasets (`/data/pipelines-all-datasets/index-record`) before the `solr` step.
+```
+./la-pipelines clustering all --embedded
+```
+Jackknife is run on all indexed datasets (`/data/pipelines-all-datasets/index-record`) before the `solr` step. It also requires sampling for all datasets.
+```
+./la-pipelines sample all --embedded
+./la-pipelines jackknife all --embedded
+```
 
 ## Production
 There are currently one manager node (live-pipelines-1) and six worker nodes (live-pipelines-2 - live-pipelines-7) for running pipelines. 
@@ -96,6 +112,13 @@ Use `la-pipelines` (/usr/bin/la-pipelines) to run single pipeline steps:
 la-pipelines interpret dr11 > /data/log/dr11/$(date +%y%m%d-%H%M%S).log 2>&1
 ```
 There is also a script for loading datasets from a queue file: `load-queue`. The queue file is expected to be found at `/data/load-queue/queue.txt` and contain the datasets to be loaded on separate lines.
+
+#### Experimental
+Clustering:
+```
+la-pipelines clustering all > /data/log/clustering/$(date +%y%m%d-%H%M%S).log 2>&1
+```
+
 ### Logs
 When you run `sbdi-load` a log file will be created in `/data/log/dr[X]`.
 

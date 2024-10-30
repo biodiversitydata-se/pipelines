@@ -23,10 +23,14 @@ samplingService:
   batchStatusSleepTime: 10000
 index:
   includeImages: false
+jackKnife:
+  layers: el10014,el10016
 solr:
   #zkHost: localhost:2181,localhost:2182,localhost:2183
   zkHost: localhost:9983
   includeSampling: true
+  includeClustering: false
+  includeJackKnife: false
   numOfPartitions: 2
 geocodeConfig:
   stateProvince:
