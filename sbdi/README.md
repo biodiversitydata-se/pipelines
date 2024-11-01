@@ -64,6 +64,10 @@ This is an adapted version of [Getting started in livingatlas/README.md](../livi
 To run steps 2-10 in one go use the [sbdi-load](../livingatlas/scripts/sbdi-load) script.
 
 #### Experimental
+Disabling taxon matching on taxonId is necessary for iNaturalist.
+```
+./la-pipelines interpret dr986 --embedded --config=../configs/la-pipelines.yaml,../configs/la-pipelines-local.yaml,../configs/disable-match-on-taxonid.yaml
+```
 Clustering is run on all indexed datasets (`/data/pipelines-all-datasets/index-record`) before the `solr` step.
 ```
 ./la-pipelines clustering all --embedded
@@ -114,6 +118,10 @@ la-pipelines interpret dr11 > /data/log/dr11/$(date +%y%m%d-%H%M%S).log 2>&1
 There is also a script for loading datasets from a queue file: `load-queue`. The queue file is expected to be found at `/data/load-queue/queue.txt` and contain the datasets to be loaded on separate lines.
 
 #### Experimental
+Disabling taxon matching on taxonId is necessary for iNaturalist:
+```
+la-pipelines interpret dr986 --config=/data/la-pipelines/config/la-pipelines.yaml,/data/la-pipelines/config/la-pipelines-local.yaml,/data/la-pipelines/config/disable-match-on-taxonid.yaml > /data/log/dr986/$(date +%y%m%d-%H%M%S).log 2>&1
+```
 Clustering:
 ```
 la-pipelines clustering all > /data/log/clustering/$(date +%y%m%d-%H%M%S).log 2>&1
