@@ -2,6 +2,8 @@ dwca-avro:
   inputPath: /data/dwca-export/{datasetId}/{datasetId}.zip
   #inputPath: /data/dwca-export/{datasetId}/tmp
   tempLocation: /data/dwca-export/{datasetId}/tmp/
+uuid:
+  numberOfBackupsToKeep: 5
 alaNameMatch:
   wsUrl: https://namematching.biodiversitydata.se/
 sds:

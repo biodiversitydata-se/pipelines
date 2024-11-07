@@ -93,10 +93,7 @@ Use `sbdi-load` (/usr/bin/sbdi-load) to run all the pipeline steps for a single 
 sbdi-load dr11
 ```
 
-To also load images:
-```
-sbdi-load dr11 --load-images
-```
+`sbdi-load` will look for dataset-specific configuration in `/data/la-pipelines/config/dr.config`.
 
 `sbdi-load` runs the following pipeline steps:
 - copy
@@ -104,8 +101,8 @@ sbdi-load dr11 --load-images
 - interpret
 - uuid
 - sds
-- image-load (only if run with `--load-images`)
-- image-sync (only if run with `--load-images`)
+- image-load (only if specified in `dr.config`)
+- image-sync (only if specified in `dr.config`)
 - index
 - sample
 - solr
