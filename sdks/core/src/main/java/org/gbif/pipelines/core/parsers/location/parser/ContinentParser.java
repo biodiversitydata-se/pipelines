@@ -67,7 +67,9 @@ public class ContinentParser {
           return ParsedField.success(continent, issues);
         } else {
           // Wrong continent found.
-          issues.add(CONTINENT_COORDINATE_MISMATCH.name());
+          // SBDI: it's wrong to issue this warning since we don't have
+          // a valid continent shape file to verify with
+          // issues.add(CONTINENT_COORDINATE_MISMATCH.name());
           return ParsedField.success(continent, issues);
         }
       } else {
@@ -77,7 +79,9 @@ public class ContinentParser {
           return ParsedField.success(null, issues);
         } else {
           // Continent supplied but in the ocean.
-          issues.add(CONTINENT_COORDINATE_MISMATCH.name());
+          // SBDI: it's wrong to issue this warning since we don't have
+          // a valid continent shape file to verify with
+          // issues.add(CONTINENT_COORDINATE_MISMATCH.name());
           return ParsedField.success(null, issues);
         }
       }

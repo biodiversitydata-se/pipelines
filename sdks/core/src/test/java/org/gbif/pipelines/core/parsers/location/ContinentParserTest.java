@@ -172,8 +172,9 @@ public class ContinentParserTest {
     // Should
     Assert.assertTrue(result.isSuccessful());
     Assert.assertEquals(Continent.EUROPE, result.getResult());
-    Assert.assertTrue(result.getIssues().contains(CONTINENT_COORDINATE_MISMATCH.name()));
-    Assert.assertEquals(1, result.getIssues().size());
+    // SBDI: commented out due to workaround in ContentParser
+    // Assert.assertTrue(result.getIssues().contains(CONTINENT_COORDINATE_MISMATCH.name()));
+    // Assert.assertEquals(1, result.getIssues().size());
   }
 
   @Test
@@ -197,9 +198,10 @@ public class ContinentParserTest {
     // Should
     Assert.assertTrue(result.isSuccessful());
     Assert.assertEquals(Continent.EUROPE, result.getResult());
-    Assert.assertTrue(result.getIssues().contains(CONTINENT_COORDINATE_MISMATCH.name()));
+    // SBDI: commented out due to workaround in ContentParser
+    // Assert.assertTrue(result.getIssues().contains(CONTINENT_COORDINATE_MISMATCH.name()));
     Assert.assertTrue(result.getIssues().contains(CONTINENT_COUNTRY_MISMATCH.name()));
-    Assert.assertEquals(2, result.getIssues().size());
+    Assert.assertEquals(1, result.getIssues().size());
   }
 
   @Test
@@ -290,8 +292,9 @@ public class ContinentParserTest {
     // Should
     Assert.assertTrue(result.isSuccessful());
     Assert.assertNull(result.getResult());
-    Assert.assertTrue(result.getIssues().contains(CONTINENT_COORDINATE_MISMATCH.name()));
-    Assert.assertEquals(1, result.getIssues().size());
+    // SBDI: commented out due to workaround in ContentParser
+    // Assert.assertTrue(result.getIssues().contains(CONTINENT_COORDINATE_MISMATCH.name()));
+    // Assert.assertEquals(1, result.getIssues().size());
   }
 
   @Test
