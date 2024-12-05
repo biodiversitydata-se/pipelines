@@ -37,7 +37,7 @@ solr:
 geocodeConfig:
   stateProvince:
     path: /data/pipelines-shp/lan
-    field: LnNamn
+    field: LAN_NAMN
 images:
   # pipe separated list (note: YAML list not coming through correctly)
   recognisedPaths: "https://images.biodiversitydata.se|http://localhost:8082"
