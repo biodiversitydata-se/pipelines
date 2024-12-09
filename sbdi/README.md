@@ -115,10 +115,6 @@ la-pipelines interpret dr11 > /data/log/dr11/$(date +%y%m%d-%H%M%S).log 2>&1
 There is also a script for loading datasets from a queue file: `load-queue`. The queue file is expected to be found at `/data/load-queue/queue.txt` and contain the datasets to be loaded on separate lines.
 
 #### Experimental
-Disabling taxon matching on taxonId is necessary for iNaturalist:
-```
-la-pipelines interpret dr986 --config=/data/la-pipelines/config/la-pipelines.yaml,/data/la-pipelines/config/la-pipelines-local.yaml,/data/la-pipelines/config/disable-match-on-taxonid.yaml > /data/log/dr986/$(date +%y%m%d-%H%M%S).log 2>&1
-```
 Clustering:
 ```
 la-pipelines clustering all > /data/log/clustering/$(date +%y%m%d-%H%M%S).log 2>&1
@@ -205,6 +201,10 @@ delete-deleted-records dr964 2024-04-01
 ```
 
 ### Other things to watch
+* If the unique term of a dataset is changed the uuid step will most likely fail because too many records have changed id:s. This validatiation can be overriden like this:
+  ```
+  la-pipelines uuid dr4 --extra-args=overridePercentageCheck=true > /data/log/dr4/$(date +%y%m%d-%H%M%S).log 2>&1
+  ```
 * Spark accumulates data in `/data/spark/work` on the worker nodes. This has been addressed by setting `spark.worker.cleanup.enabled=true`.
 * The docker services accumulate data in `/var/lib/docker/containers` which may fill up the root volume. This data is cleared when the docker services are stopped and removed (they start again on reboot).
 * If Artportalen fails with random errors, try restarting all machines. This is to clear up memory used by the docker services (and possibly other stuff).
