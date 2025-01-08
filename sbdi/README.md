@@ -63,7 +63,6 @@ This is an adapted version of [Getting started in livingatlas/README.md](../livi
 
 To run steps 2-10 in one go use the [sbdi-load](../livingatlas/scripts/sbdi-load) script.
 
-#### Experimental
 Disabling taxon matching on taxonId is necessary for iNaturalist.
 ```
 ./la-pipelines interpret dr986 --embedded --config=../configs/la-pipelines.yaml,../configs/la-pipelines-local.yaml,../configs/disable-match-on-taxonid.yaml
@@ -72,6 +71,7 @@ Clustering is run on all indexed datasets (`/data/pipelines-all-datasets/index-r
 ```
 ./la-pipelines clustering all --embedded
 ```
+#### Experimental
 Jackknife is run on all indexed datasets (`/data/pipelines-all-datasets/index-record`) before the `solr` step. It also requires sampling for all datasets.
 ```
 ./la-pipelines sample all --embedded
@@ -106,6 +106,7 @@ sbdi-load dr11
 - index
 - sample
 - solr
+- [delete removed records](#Deleting-removed-records-in-SOLR)
 - [backup of identifiers](#backup)
 
 Use `la-pipelines` (/usr/bin/la-pipelines) to run single pipeline steps:
@@ -114,10 +115,21 @@ la-pipelines interpret dr11 > /data/log/dr11/$(date +%y%m%d-%H%M%S).log 2>&1
 ```
 There is also a script for loading datasets from a queue file: `load-queue`. The queue file is expected to be found at `/data/load-queue/queue.txt` and contain the datasets to be loaded on separate lines.
 
-#### Experimental
-Clustering:
+#### Clustering
+Clustering is run on all indexed datasets before the solr step:
 ```
 la-pipelines clustering all > /data/log/clustering/$(date +%y%m%d-%H%M%S).log 2>&1
+```
+In order to support various load scenarios for clustering `sbdi-load` and `load-queue` have a *mode* parameter that can be one of the following:
+* `default` (or unspecified) - run all pipelines steps as listed above
+* `skip_solr` - run all pipelines steps except solr
+* `only_solr` - run only the solr step
+* `clustering` - run all pipelines steps as listed above plus clustering (before solr)
+
+Examples:
+```
+sbdi-load dr11 skip_solr
+load-queue skip_solr
 ```
 
 ### Logs
