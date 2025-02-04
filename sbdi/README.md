@@ -120,6 +120,8 @@ Clustering is run on all indexed datasets before the solr step:
 ```
 la-pipelines clustering all > /data/log/clustering/$(date +%y%m%d-%H%M%S).log 2>&1
 ```
+**Important!** When clustering has been run ALL records need to be re-inserted into Solr to avoid having inconsistencies between representative and associated records.
+
 In order to support various load scenarios for clustering `sbdi-load` and `load-queue` have a *mode* parameter that can be one of the following:
 * `default` (or unspecified) - run all pipelines steps as listed above
 * `skip_solr` - run all pipelines steps except solr
