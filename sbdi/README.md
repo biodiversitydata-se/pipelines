@@ -61,7 +61,7 @@ This is an adapted version of [Getting started in livingatlas/README.md](../livi
 1. To sample, run `./la-pipelines sample dr15 --embedded`
 1. To generate the SOLR index, run `./la-pipelines solr dr15 --embedded` (If the dataset lacks sampling info, run: `./la-pipelines solr dr15 --embedded --extra-args=includeSampling=false`)
 
-To run steps 2-10 in one go use the [sbdi-load](../livingatlas/scripts/sbdi-load) script.
+To run steps 2-10 in one go use the [load-dr](../livingatlas/scripts/load-dr) script.
 
 Disabling taxon matching on taxonId is necessary for iNaturalist.
 ```
@@ -88,14 +88,14 @@ See *pipelines* and *solrcloud* roles in [sbdi-install](https://github.com/biodi
 ### Running pipelines
 Run pipelines as the `spark` user. A recommendation is to use Linux [screen command](https://www.gnu.org/software/screen/manual/screen.html), especially when loading large datasets.  
 
-Use `sbdi-load` (/usr/bin/sbdi-load) to run all the pipeline steps for a single dataset:
+Use `load-dr` (/usr/bin/load-dr) to run all the pipeline steps for a single dataset:
 ```
-sbdi-load dr11
+load-dr dr11
 ```
 
-`sbdi-load` will look for dataset-specific configuration in `/data/la-pipelines/config/dr.config`.
+`load-dr` will look for dataset-specific configuration in `/data/la-pipelines/config/dr.config`.
 
-`sbdi-load` runs the following pipeline steps:
+`load-dr` runs the following pipeline steps:
 - copy
 - dwca-avro
 - interpret
@@ -122,7 +122,7 @@ la-pipelines clustering all > /data/log/clustering/$(date +%y%m%d-%H%M%S).log 2>
 ```
 **Important!** When clustering has been run ALL records need to be re-inserted into Solr to avoid having inconsistencies between representative and associated records.
 
-In order to support various load scenarios for clustering `sbdi-load` and `load-queue` have a *mode* parameter that can be one of the following:
+In order to support various load scenarios for clustering `load-dr` and `load-queue` have a *mode* parameter that can be one of the following:
 * `default` (or unspecified) - run all pipelines steps as listed above
 * `skip_solr` - run all pipelines steps except solr
 * `only_solr` - run only the solr step
@@ -130,12 +130,12 @@ In order to support various load scenarios for clustering `sbdi-load` and `load-
 
 Examples:
 ```
-sbdi-load dr11 skip_solr
+load-dr dr11 skip_solr
 load-queue skip_solr
 ```
 
 ### Logs
-When you run `sbdi-load` a log file will be created in `/data/log/dr[X]`.
+When you run `load-dr` a log file will be created in `/data/log/dr[X]`.
 
 Each spark worker node (live-pipelines-2 - live-pipelines-7) also creates a log for every spark application it runs. The logs can be found in `/data/spark/work`. This directory also contains a copy of the jar-file used. The size of this directory can grow quickly when many datasets are loaded. There is an ansible task in [sbdi-install](https://github.com/biodiversitydata-se/sbdi-install) to clear it out on all nodes.  
 
@@ -268,7 +268,7 @@ Remove all entries for a dataset:
 ```
 
 ### Backup
-The unique identifiers for each dataset are stored on hadoop in `/pipelines-data/dr[X]/1/identifiers`. There is also a backup on `live-pipelines-1:/data/backup/pipelines-data`. Identifiers are copied to the backup directory as the last step in `sbdi-load`.
+The unique identifiers for each dataset are stored on hadoop in `/pipelines-data/dr[X]/1/identifiers`. There is also a backup on `live-pipelines-1:/data/backup/pipelines-data`. Identifiers are copied to the backup directory as the last step in `load-dr`.
 
 To backup the identifiers manually for a dataset run this command (as the `spark` user):
 ```

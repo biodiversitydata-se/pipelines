@@ -28,4 +28,4 @@ fi
 $scriptpath/la-pipelines solr $dr --embedded $extra_args_solr
 
 duration=$SECONDS
-echo "=== sbdi-load of $dr took $(($duration / 60)) minutes and $(($duration % 60)) seconds"
+echo "=== load-dr of $dr took $(($duration / 60)) minutes and $(($duration % 60)) seconds"
