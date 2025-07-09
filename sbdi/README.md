@@ -88,6 +88,7 @@ See *pipelines* and *solrcloud* roles in [sbdi-install](https://github.com/biodi
 ### Running pipelines
 Run pipelines as the `spark` user. A recommendation is to use Linux [screen command](https://www.gnu.org/software/screen/manual/screen.html), especially when loading large datasets.  
 
+#### Load a single dataset
 Use `load-dr` (/usr/bin/load-dr) to run all the pipeline steps for a single dataset:
 ```
 load-dr dr11
@@ -106,13 +107,14 @@ load-dr dr11
 - index
 - sample
 - solr
-- [delete removed records](#Deleting-removed-records-in-SOLR)
 - [backup of identifiers](#backup)
 
+#### Run a specific pipeline step
 Use `la-pipelines` (/usr/bin/la-pipelines) to run single pipeline steps:
 ```
 la-pipelines interpret dr11 > /data/log/dr11/$(date +%y%m%d-%H%M%S).log 2>&1
 ```
+#### Load multiple datasets
 There is also a script for loading datasets from a queue file: `load-queue`. The queue file is expected to be found at `/data/load-queue/queue.txt` and contain the datasets to be loaded on separate lines.
 
 #### Clustering
@@ -137,16 +139,11 @@ load-queue skip_solr
 ### Logs
 When you run `load-dr` a log file will be created in `/data/log/dr[X]`.
 
-Each spark worker node (live-pipelines-2 - live-pipelines-7) also creates a log for every spark application it runs. The logs can be found in `/data/spark/work`. This directory also contains a copy of the jar-file used. The size of this directory can grow quickly when many datasets are loaded. There is an ansible task in [sbdi-install](https://github.com/biodiversitydata-se/sbdi-install) to clear it out on all nodes.  
+Each spark worker node (live-pipelines-2 - live-pipelines-7) also creates a log for every spark application it runs. These logs can be found in `/data/spark/work`.  
 
 ### Monitoring
 
 There are a number of web ui:s running on the various nodes that can be useful to monitor while running pipelines. SSL tunneling can be used to access them.
-
-Solr cloud:
-```
-ssh -L 8973:127.0.0.1:8973 live-solrcloud-1
-```
 
 Hadoop manager:
 ```
@@ -173,6 +170,11 @@ SparkContext (only available when Spark is executing tasks):
 ssh -L 4040:127.0.0.1:4040 live-pipelines-1
 ```
 
+Solr cloud:
+```
+ssh -L 8973:127.0.0.1:8973 live-solrcloud-1
+```
+
 ### Deploy new pipelines jar-file
 The pipelines jar file is built on github and can be accessed as a workflow artifact. Follow these steps to deploy a newly built jar file.
 * Download artifact from the last workflow run: https://github.com/biodiversitydata-se/pipelines/actions
@@ -194,7 +196,7 @@ Pipelines don't handle removal of records from SOLR. If records have been remove
 
 Datasets having too many records in the Atlas can be found in the [IPT vs Atlas view](https://collections.biodiversitydata.se/ipt/syncView?uid=dp0&sort=title&order=asc&onlyUnsynced=true) in the Collectory.
 
-The specific records can be found with the following SOLR query (using the AND operator). Don't forget to adjust the TO date. The TO should be something like the day before the current date.
+The specific records can be found with the following SOLR query (using the AND operator). Don't forget to adjust the TO date. The TO should be something like two day before the current date.
 ```
 dataResourceUid:dr964
 lastLoadDate:[2024-01-01T00:00:00Z TO 2024-04-01T00:00:00Z]
@@ -279,4 +281,4 @@ For all datasets:
 backup-all > /data/backup/$(date +%y%m%d-%H%M%S).log 2>&1
 ```
 
-The identifiers and the log directory are also copied (manually by using the `backup-pipelines.sh` script) to `nrm-sbdibackup`.
+The identifiers are also copied (manually by using the `backup-pipelines.sh` script) to `nrm-sbdibackup`.
