@@ -114,7 +114,24 @@ Use `la-pipelines` (/usr/bin/la-pipelines) to run single pipeline steps:
 ```
 la-pipelines interpret dr11 > /data/log/dr11/$(date +%y%m%d-%H%M%S).log 2>&1
 ```
-#### Load multiple datasets
+#### Load datasets using service
+`live-pipelines-1` runs a service that watches a queue and loads datasets added to the queue. The queue is a directory (`/data/service-queue`) and the queue items are empty files named as the dataset.
+The queue can be managed from scripts in [sbdi-install](https://github.com/biodiversitydata-se/sbdi-install).
+
+List queue:
+```
+./utils/pipelines/load-queue.sh list
+```
+Add dataset to queue:
+```
+./utils/pipelines/load-queue.sh add dr11
+```
+Remove dataset from queue:
+```
+./utils/pipelines/load-queue.sh rm dr11
+```
+
+#### Load multiple datasets (legacy)
 There is also a script for loading datasets from a queue file: `load-queue`. The queue file is expected to be found at `/data/load-queue/queue.txt` and contain the datasets to be loaded on separate lines.
 
 #### Clustering
