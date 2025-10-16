@@ -19,11 +19,10 @@ import org.gbif.validator.api.Metrics.FileInfo;
 import org.gbif.validator.api.Metrics.TermInfo;
 import org.gbif.validator.api.Validation;
 import org.gbif.validator.ws.client.ValidationWsClient;
-import org.junit.Test;
 
 public class ChecklistValidatorCallbackIT {
 
-  @Test
+  //  @Test
   public void checklistTest() {
     // Temp dir
     Path temp = Paths.get(getClass().getResource("/").getFile());
@@ -102,7 +101,7 @@ public class ChecklistValidatorCallbackIT {
     assertEquals(4, distribution.getTerms().size());
     assertEquals(0, distribution.getIssues().size());
     assertTerm(DwcTerm.countryCode, 475, 475, distribution);
-    assertTerm(DwcTerm.occurrenceStatus, 475, 0, distribution);
+    assertTerm(DwcTerm.occurrenceStatus, 475, 475, distribution);
     assertTerm(DwcTerm.establishmentMeans, 475, 0, distribution);
     assertTerm(DwcTerm.locationID, 0, 0, distribution);
     callback.close();

@@ -28,17 +28,7 @@ import org.gbif.pipelines.common.beam.options.PipelinesOptionsFactory;
 import org.gbif.pipelines.core.io.SyncDataFileWriter;
 import org.gbif.pipelines.ingest.resources.ZkServer;
 import org.gbif.pipelines.ingest.utils.InterpretedAvroWriter;
-import org.gbif.pipelines.io.avro.AudubonRecord;
-import org.gbif.pipelines.io.avro.BasicRecord;
-import org.gbif.pipelines.io.avro.ClusteringRecord;
-import org.gbif.pipelines.io.avro.ExtendedRecord;
-import org.gbif.pipelines.io.avro.IdentifierRecord;
-import org.gbif.pipelines.io.avro.ImageRecord;
-import org.gbif.pipelines.io.avro.LocationRecord;
-import org.gbif.pipelines.io.avro.MetadataRecord;
-import org.gbif.pipelines.io.avro.MultimediaRecord;
-import org.gbif.pipelines.io.avro.TaxonRecord;
-import org.gbif.pipelines.io.avro.TemporalRecord;
+import org.gbif.pipelines.io.avro.*;
 import org.gbif.pipelines.io.avro.grscicoll.GrscicollRecord;
 import org.gbif.pipelines.transforms.core.VerbatimTransform;
 import org.gbif.pipelines.transforms.specific.GbifIdTransform;
@@ -84,7 +74,8 @@ public class VerbatimToOccurrencePipelineIT {
       "--targetPath=" + outputFile,
       "--interpretationTypes=IDENTIFIER_ABSENT,CLUSTERING,TEMPORAL,LOCATION,GRSCICOLL,MULTIMEDIA,MEASUREMENT_OR_FACT_TABLE,BASIC,TAXONOMY,IMAGE,AMPLIFICATION,OCCURRENCE,VERBATIM,LOCATION_FEATURE,MEASUREMENT_OR_FACT,AUDUBON,METADATA",
       "--properties=" + outputFile + "/pipelines.yaml",
-      "--testMode=true"
+      "--testMode=true",
+      "--numberOfShards=1"
     };
 
     // Write GBIF_IDs
@@ -127,7 +118,8 @@ public class VerbatimToOccurrencePipelineIT {
       "--targetPath=" + outputFile,
       "--interpretationTypes=CLUSTERING,TEMPORAL,LOCATION,GRSCICOLL,MULTIMEDIA,MEASUREMENT_OR_FACT_TABLE,BASIC,TAXONOMY,IMAGE,AMPLIFICATION,OCCURRENCE,VERBATIM,LOCATION_FEATURE,MEASUREMENT_OR_FACT,AUDUBON,METADATA",
       "--properties=" + outputFile + "/pipelines.yaml",
-      "--testMode=true"
+      "--testMode=true",
+      "--numberOfShards=1"
     };
 
     // Write GBIF_IDs
@@ -165,7 +157,8 @@ public class VerbatimToOccurrencePipelineIT {
       "--interpretationTypes=" + ALL,
       "--properties=" + outputFile + "/pipelines.yaml",
       "--syncThreshold=0",
-      "--testMode=true"
+      "--testMode=true",
+      "--numberOfShards=1"
     };
 
     // When, Should
@@ -190,7 +183,8 @@ public class VerbatimToOccurrencePipelineIT {
       "--interpretationTypes=" + CLUSTERING,
       "--properties=" + outputFile + "/pipelines.yaml",
       "--syncThreshold=0",
-      "--testMode=true"
+      "--testMode=true",
+      "--numberOfShards=1"
     };
 
     // When, Should
@@ -214,7 +208,8 @@ public class VerbatimToOccurrencePipelineIT {
       "--targetPath=" + outputFile,
       "--interpretationTypes=" + TAXONOMY,
       "--properties=" + outputFile + "/pipelines.yaml",
-      "--testMode=true"
+      "--testMode=true",
+      "--numberOfShards=1"
     };
 
     // When, Should
@@ -278,7 +273,7 @@ public class VerbatimToOccurrencePipelineIT {
 
     String interpretedOutput = String.join("/", outputFile, DATASET_KEY, attempt, "occurrence");
 
-    assertEquals(13, new File(interpretedOutput).listFiles().length);
+    assertEquals(14, new File(interpretedOutput).listFiles().length);
     assertFile(AudubonRecord.class, interpretedOutput + "/audubon");
     assertFile(BasicRecord.class, interpretedOutput + "/basic");
     assertFile(ClusteringRecord.class, interpretedOutput + "/clustering");
@@ -286,10 +281,11 @@ public class VerbatimToOccurrencePipelineIT {
     assertFile(IdentifierRecord.class, interpretedOutput + "/identifier_invalid");
     assertFile(GrscicollRecord.class, interpretedOutput + "/grscicoll");
     assertFile(ImageRecord.class, interpretedOutput + "/image");
+    assertFile(DnaDerivedDataRecord.class, interpretedOutput + "/dna_derived_data");
     assertFile(LocationRecord.class, interpretedOutput + "/location");
     assertFile(MetadataRecord.class, interpretedOutput + "/metadata");
     assertFile(MultimediaRecord.class, interpretedOutput + "/multimedia");
-    assertFile(TaxonRecord.class, interpretedOutput + "/taxonomy");
+    assertFile(MultiTaxonRecord.class, interpretedOutput + "/multi_taxonomy");
     assertFile(TemporalRecord.class, interpretedOutput + "/temporal");
     assertFile(ExtendedRecord.class, interpretedOutput + "/verbatim");
   }

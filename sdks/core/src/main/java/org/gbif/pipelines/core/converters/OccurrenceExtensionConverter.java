@@ -85,6 +85,11 @@ public class OccurrenceExtensionConverter {
           occurrenceId = recordOccurrenceId;
         }
 
+        // If no occurrenceId found, use id from the "parent" extended record
+        if (occurrenceId == null) {
+          occurrenceId = er.getCoreTerms().get(DwcTerm.occurrenceID.qualifiedName());
+        }
+
         Map<String, List<Map<String, String>>> parsedExtensions = result.get(occurrenceId);
 
         // If the map is null we create new map for the extension

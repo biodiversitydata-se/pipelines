@@ -1,8 +1,11 @@
 package org.gbif.pipelines.core.factory;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import io.github.resilience4j.core.IntervalFunction;
 import io.github.resilience4j.retry.Retry;
+import java.io.IOException;
 import java.util.Objects;
+import java.util.concurrent.TimeoutException;
 import javax.annotation.Nullable;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -16,7 +19,9 @@ import org.gbif.pipelines.core.config.model.RetryConfig;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RetryFactory {
 
-  /** @return a new {@link Retry} instance using the supplied configuration. */
+  /**
+   * @return a new {@link Retry} instance using the supplied configuration.
+   */
   public static Retry create(@Nullable RetryConfig retryConfig, String name) {
     RetryConfig config = Objects.isNull(retryConfig) ? new RetryConfig() : retryConfig;
     IntervalFunction intervalFn =
@@ -27,6 +32,7 @@ public class RetryFactory {
     io.github.resilience4j.retry.RetryConfig resilienceRetryConfig =
         io.github.resilience4j.retry.RetryConfig.custom()
             .maxAttempts(config.getMaxAttempts())
+            .retryExceptions(JsonParseException.class, IOException.class, TimeoutException.class)
             .intervalFunction(intervalFn)
             .build();
     return Retry.of(name, resilienceRetryConfig);

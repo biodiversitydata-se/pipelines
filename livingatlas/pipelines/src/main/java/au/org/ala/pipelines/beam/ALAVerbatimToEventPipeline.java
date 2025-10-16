@@ -102,6 +102,7 @@ public class ALAVerbatimToEventPipeline {
       InterpretationPipelineOptions options,
       Function<InterpretationPipelineOptions, Pipeline> pipelinesFn) {
 
+    PipelinesOptionsFactory.registerHdfs(options);
     String datasetId = options.getDatasetId();
     Integer attempt = options.getAttempt();
     Set<String> types = getEventTypes(options.getInterpretationTypes());
@@ -159,11 +160,7 @@ public class ALAVerbatimToEventPipeline {
     EventCoreTransform eventCoreTransform =
         EventCoreTransform.builder()
             .vocabularyServiceSupplier(
-                FileVocabularyFactory.builder()
-                    .config(config.getGbifConfig())
-                    .hdfsConfigs(hdfsConfigs)
-                    .build()
-                    .getInstanceSupplier())
+                FileVocabularyFactory.getInstanceSupplier(hdfsConfigs, config.getGbifConfig()))
             .create();
     IdentifierTransform identifierTransform = transformsFactory.createIdentifierTransform();
     MeasurementOrFactTransform measurementOrFactTransform =

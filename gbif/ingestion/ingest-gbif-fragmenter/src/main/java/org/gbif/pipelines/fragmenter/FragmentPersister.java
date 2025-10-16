@@ -26,9 +26,7 @@ import org.gbif.converters.parser.xml.parsing.validators.UniquenessValidator;
 import org.gbif.pipelines.fragmenter.common.HbaseStore;
 import org.gbif.pipelines.fragmenter.common.RawRecord;
 import org.gbif.pipelines.fragmenter.record.OccurrenceRecordConverter;
-import org.gbif.pipelines.fragmenter.strategy.DwcaStrategy;
 import org.gbif.pipelines.fragmenter.strategy.Strategy;
-import org.gbif.pipelines.fragmenter.strategy.XmlStrategy;
 import org.gbif.pipelines.keygen.HBaseLockingKeyService;
 import org.gbif.pipelines.keygen.OccurrenceRecord;
 import org.gbif.pipelines.keygen.common.HbaseConnectionFactory;
@@ -92,14 +90,6 @@ public class FragmentPersister {
 
   private Connection hbaseConnection;
 
-  public static FragmentPersisterBuilder xmlBuilder() {
-    return FragmentPersister.builder().strategy(XmlStrategy.create());
-  }
-
-  public static FragmentPersisterBuilder dwcaBuilder() {
-    return FragmentPersister.builder().strategy(DwcaStrategy.create());
-  }
-
   @SneakyThrows
   public long persist() {
 
@@ -112,7 +102,8 @@ public class FragmentPersister {
     final Connection connection =
         Optional.ofNullable(hbaseConnection)
             .orElse(
-                HbaseConnectionFactory.getInstance(keygenConfig.getZkConnectionString())
+                HbaseConnectionFactory.getInstance(
+                        keygenConfig.getZkConnectionString(), keygenConfig.getHbaseZnode())
                     .getConnection());
     final HBaseLockingKeyService keygenService =
         new HBaseLockingKeyService(keygenConfig, connection, datasetKey);

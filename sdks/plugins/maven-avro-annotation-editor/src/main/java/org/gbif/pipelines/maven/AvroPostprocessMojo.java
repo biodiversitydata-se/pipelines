@@ -170,9 +170,13 @@ public class AvroPostprocessMojo extends AbstractMojo {
     int interIdx = idxs.get(1);
     int ovrdIdx = idxs.get(2);
     int idIdx = idxs.get(3);
-    if (interIdx != -1 && ovrdIdx != -1 && idIdx != -1) {
-      String replace =
-          INTER_BASE + ", " + defaultPackage + ".Issues, " + defaultPackage + ".Record {";
+    if (interIdx != -1 && ovrdIdx != -1) {
+      String replace = INTER_BASE + ", " + defaultPackage + ".Issues";
+      if (idIdx != -1) {
+        replace += ", " + defaultPackage + ".Record";
+      }
+      replace += " {";
+
       replace = lines.get(interIdx).replace(INTER, replace);
       lines.set(interIdx, replace);
     }
@@ -186,9 +190,8 @@ public class AvroPostprocessMojo extends AbstractMojo {
    */
   private void addRecordInterface(List<String> lines, List<Integer> idxs) {
     int interIdx = idxs.get(1);
-    int ovrdIdx = idxs.get(2);
     int idIdx = idxs.get(3);
-    if (interIdx != -1 && ovrdIdx == -1 && idIdx != -1) {
+    if (interIdx != -1 && idIdx != -1) {
       String replace = INTER_BASE + ", " + defaultPackage + ".Record {";
       replace = lines.get(interIdx).replace(INTER, replace);
       lines.set(interIdx, replace);
@@ -214,7 +217,7 @@ public class AvroPostprocessMojo extends AbstractMojo {
         beforeIdx = x;
       } else if (line.endsWith(INTER)) {
         interIdx = x;
-      } else if (line.endsWith(ISSUE)) {
+      } else if (line.endsWith(ISSUE) && ovrdIdx == -1) {
         ovrdIdx = x;
       } else if (line.endsWith(ID)) {
         idIdx = x;

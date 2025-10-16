@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.gbif.pipelines</groupId>
     <artifactId>ingestion</artifactId>
-    <version>2.18.8-SNAPSHOT</version>
+   <version>3.2.12-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -16,7 +16,6 @@
   <description>Uploads fragments (raw records) from archives into Hbase table.</description>
 
   <properties>
-    <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
     <xerces.version>2.11.0</xerces.version>
   </properties>
 
@@ -24,7 +23,27 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <argLine>
+            --add-opens java.base/java.lang=ALL-UNNAMED
+            --add-opens java.base/java.lang.reflect=ALL-UNNAMED
+            --add-opens jdk.management/com.sun.management.internal=ALL-UNNAMED
+            -Dillegal-access=permit
+          </argLine>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <argLine>
+            --add-opens java.base/java.lang=ALL-UNNAMED
+            --add-opens java.base/java.lang.reflect=ALL-UNNAMED
+            --add-opens jdk.management/com.sun.management.internal=ALL-UNNAMED
+            -Dillegal-access=permit
+          </argLine>
+        </configuration>
       </plugin>
     </plugins>
   </build>
@@ -71,19 +90,12 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
-      <groupId>org.gbif</groupId>
-      <artifactId>dwc-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.gbif</groupId>
-      <artifactId>dwca-io</artifactId>
-    </dependency>
 
     <!-- HBase -->
     <dependency>
       <groupId>org.gbif</groupId>
       <artifactId>hbase-utils</artifactId>
+      <version>${hbase-utils.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.hbase</groupId>
@@ -98,7 +110,6 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>${guava.hbase.version}</version>
     </dependency>
 
     <!-- Logging -->
@@ -108,7 +119,11 @@
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
-      <artifactId>log4j-over-slf4j</artifactId>
+      <artifactId>slf4j-log4j12</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-1.2-api</artifactId>
     </dependency>
 
     <!-- Test -->
@@ -125,13 +140,18 @@
       <artifactId>hadoop-minicluster</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.curator</groupId>
-      <artifactId>curator-framework</artifactId>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-auth</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.curator</groupId>
-      <artifactId>curator-test</artifactId>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-common</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-hdfs</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -153,6 +173,14 @@
             <artifactId>maven-failsafe-plugin</artifactId>
             <configuration>
               <skip>true</skip>
+              <forkCount>1</forkCount>
+              <reuseForks>true</reuseForks>
+              <argLine>
+                --add-opens java.base/java.lang=ALL-UNNAMED
+                --add-opens java.base/java.lang.reflect=ALL-UNNAMED
+                --add-opens jdk.management/com.sun.management.internal=ALL-UNNAMED
+                -Dillegal-access=permit
+              </argLine>
             </configuration>
           </plugin>
         </plugins>

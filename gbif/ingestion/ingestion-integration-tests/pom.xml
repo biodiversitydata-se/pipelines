@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.gbif.pipelines</groupId>
     <artifactId>ingestion</artifactId>
-    <version>2.18.8-SNAPSHOT</version>
+   <version>3.2.12-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -19,6 +19,14 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <argLine>
+            --add-opens java.base/java.lang=ALL-UNNAMED
+            --add-opens java.base/java.lang.reflect=ALL-UNNAMED
+            --add-opens jdk.management/com.sun.management.internal=ALL-UNNAMED
+            -Dillegal-access=permit
+          </argLine>
+        </configuration>
       </plugin>
     </plugins>
     <!-- Copy pom.xml value to test resources maven.properties -->
@@ -81,12 +89,17 @@
       <groupId>org.gbif.pipelines</groupId>
       <artifactId>ingest-gbif-java</artifactId>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.hadoop</groupId>
+          <artifactId>hadoop-core</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
       <groupId>org.gbif</groupId>
       <artifactId>gbif-wrangler</artifactId>
-      <version>${gbif-wrangler.version}</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>
@@ -151,7 +164,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.spark</groupId>
-      <artifactId>spark-core_2.11</artifactId>
+      <artifactId>spark-core_2.12</artifactId>
       <scope>test</scope>
       <exclusions>
         <exclusion>
@@ -162,7 +175,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.spark</groupId>
-      <artifactId>spark-streaming_2.11</artifactId>
+      <artifactId>spark-streaming_2.12</artifactId>
       <scope>test</scope>
     </dependency>
 

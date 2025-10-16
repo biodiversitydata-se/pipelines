@@ -35,7 +35,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.file.DataFileReader;
 import org.apache.avro.specific.SpecificDatumReader;
 import org.apache.commons.io.FileUtils;
-import org.apache.hadoop.fs.AvroFSInput;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -99,7 +98,7 @@ public final class FsUtils {
         FileUtils.deleteDirectory(tmp);
         log.info("temp directory {} deleted", tmp.getPath());
       } catch (IOException e) {
-        log.error("Could not delete temp directory {}", tmp.getPath());
+        log.error("Could not delete temp directory {}", tmp.getPath(), e);
       }
     }
   }
@@ -199,7 +198,7 @@ public final class FsUtils {
       fn.accept(p);
 
     } catch (IOException e) {
-      log.warn("Can't change permissions for folder/file - {}", path);
+      log.warn("Can't change permissions for folder/file - {}", path, e);
     }
   }
 
@@ -220,7 +219,7 @@ public final class FsUtils {
         log.info("File {} moved status - {}", path, rename);
       }
     } catch (IOException e) {
-      log.warn("Can't move files using filter - {}, into path - {}", globFilter, targetPath);
+      log.warn("Can't move files using filter - {}, into path - {}", globFilter, targetPath, e);
     }
   }
 
@@ -240,7 +239,7 @@ public final class FsUtils {
         fs.delete(path, Boolean.TRUE);
       }
     } catch (IOException e) {
-      log.warn("Can't delete files using filter - {}", globFilter);
+      log.warn("Can't delete files using filter - {}", globFilter, e);
     }
   }
 
@@ -437,13 +436,15 @@ public final class FsUtils {
 
   @SneakyThrows
   public static List<Path> getFilesByExt(FileSystem fs, Path path, String filterExt) {
-    RemoteIterator<LocatedFileStatus> files = fs.listFiles(path, false);
     List<Path> paths = new ArrayList<>();
-    while (files.hasNext()) {
-      LocatedFileStatus next = files.next();
-      Path np = next.getPath();
-      if (next.isFile() && np.getName().endsWith(filterExt)) {
-        paths.add(np);
+    if (fs.exists(path)) {
+      RemoteIterator<LocatedFileStatus> files = fs.listFiles(path, false);
+      while (files.hasNext()) {
+        LocatedFileStatus next = files.next();
+        Path np = next.getPath();
+        if (next.isFile() && np.getName().endsWith(filterExt)) {
+          paths.add(np);
+        }
       }
     }
     return paths;
