@@ -189,8 +189,8 @@ if [[ -z $config ]]; then config=$CONFIG_DIR/la-pipelines.yaml,$CONFIG_DIR/la-pi
 #if [[ $PROD = true &&  $no_colors = false ]]; then logConfig=$CONFIG_DIR/log4j-colorized.properties; fi
 #if [[ $PROD = true &&  $no_colors = true ]];  then logConfig=$CONFIG_DIR/log4j.properties; fi
 
-if [[ $PROD = false ]] ; then logConfig=$PWD/../pipelines/src/main/resources/logback.xml ; fi
-if [[ $PROD = true ]] ;  then logConfig=$CONFIG_DIR/logback.xml ; fi
+if [[ $PROD = false ]] ; then logConfig=$PWD/../pipelines/src/main/resources/log4j.properties ; fi
+if [[ $PROD = true ]] ;  then logConfig=$CONFIG_DIR/log4j.properties ; fi
 
 # Let's parse dr variable in order to allow multiple drs
 drs=("${dr[@]}")
@@ -322,7 +322,7 @@ IFS=',' read -ra excludes <<< "$exclude"
 # if ( $debug) ; then EXTRA_JVM_CLI_ARGS="-Dlog4j.debug"; fi
 
 # Set log4j configuration for v1 and v2
-#EXTRA_JVM_CLI_ARGS="$EXTRA_JVM_CLI_ARGS -Dlog4j.configuration=file://$logConfig -Dlog4j.configurationFile=file://$logConfig"
+EXTRA_JVM_CLI_ARGS="$EXTRA_JVM_CLI_ARGS -Dlog4j.configuration=file://$logConfig -Dlog4j.configurationFile=file://$logConfig"
 #log.debug EXTRA_JVM_CLI_ARGS: $EXTRA_JVM_CLI_ARGS
 
 function logStepStart() {
