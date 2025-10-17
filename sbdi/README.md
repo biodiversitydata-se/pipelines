@@ -2,9 +2,7 @@
 This is an adapted version of [Getting started in livingatlas/README.md](../livingatlas/README.md#Getting+started). 
 
 ### Software requirements:
-* Java 8 - this is mandatory (see [GBIF pipelines documentation](https://github.com/gbif/pipelines#about-the-project)) (`sdk use java 8.0.402-tem`)
-* Maven needs to run with OpenSDK 1.8
-  'nano ~/.mavenrc' add 'export JAVA_HOME=[JDK1.8 PATH]'
+* Java 17
 * [Docker Desktop](https://www.docker.com/products/docker-desktop) or just plain Docker
 * [lombok plugin for intelliJ](https://projectlombok.org/setup/intellij) needs to be installed for slf4 annotation
 * Install `docopts` using the [prebuilt binary option](https://github.com/docopt/docopts#pre-built-binaries)
@@ -36,7 +34,7 @@ This is an adapted version of [Getting started in livingatlas/README.md](../livi
     ```
 1. Build jar-file:
    ```
-   make build
+   make build-jar
    ```
 1. Setup solr:
    1. Clone the [biocache-service](https://github.com/biodiversitydata-se/biocache-service) repo
