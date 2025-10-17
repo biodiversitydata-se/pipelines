@@ -61,7 +61,6 @@ public class OccurrenceExtensionConverter {
       ExtendedRecord er) {
 
     Map<String, Map<String, List<Map<String, String>>>> result = new HashMap<>();
-    String recordOccurrenceId = er.getCoreTerms().get(DwcTerm.occurrenceID.qualifiedName());
 
     // Go through all extensions lists
     for (Entry<String, List<Map<String, String>>> entry : er.getExtensions().entrySet()) {
@@ -77,13 +76,6 @@ public class OccurrenceExtensionConverter {
 
         // Extract occurrenceID and use it as map key
         String occurrenceId = rawExtensionData.get(DwcTerm.occurrenceID.qualifiedName());
-        // SBDI:
-        // If DwcTerm.occurrenceID is missing on the extension -> fallback to using occurrenceId
-        // from record. Datasets downloaded from GBIF (repatriated) do not include
-        // DwcTerm.occurrenceID on the multimedia extension.
-        if (occurrenceId == null) {
-          occurrenceId = recordOccurrenceId;
-        }
 
         // If no occurrenceId found, use id from the "parent" extended record
         if (occurrenceId == null) {
