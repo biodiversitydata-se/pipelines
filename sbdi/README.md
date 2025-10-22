@@ -162,12 +162,12 @@ There are a number of web ui:s running on the various nodes that can be useful t
 
 Hadoop manager:
 ```
-ssh -L 50070:127.0.0.1:50070 live-pipelines-1
+ssh -L 9870:127.0.0.1:9870 live-pipelines-1
 ```
 
 Hadoop workers:
 ```
-ssh -L 50075:127.0.0.1:50075 live-pipelines-2
+ssh -L 9864:127.0.0.1:9864 live-pipelines-2
 ```
 
 Spark manager:
