@@ -45,6 +45,10 @@ public class OccurrenceExtensionConverter {
       Map<String, String> extCoreMap,
       Map<String, Map<String, List<Map<String, String>>>> occIdExtMap) {
     String id = extCoreMap.get(DwcTerm.occurrenceID.qualifiedName());
+    // SBDI: some GBIF datasets do not have OccurrenceId
+    if (Strings.isNullOrEmpty(id)) {
+      id = coreId;
+    }
     if (!Strings.isNullOrEmpty(id)) {
       ExtendedRecord extendedRecord = ExtendedRecord.newBuilder().setId(id).build();
       extendedRecord.getCoreTerms().putAll(coreMap);
@@ -81,7 +85,10 @@ public class OccurrenceExtensionConverter {
         if (occurrenceId == null) {
           occurrenceId = er.getCoreTerms().get(DwcTerm.occurrenceID.qualifiedName());
         }
-
+        // SBDI: some GBIF datasets do not have OccurrenceId
+        if (occurrenceId == null) {
+          occurrenceId = er.getId();
+        }
         Map<String, List<Map<String, String>>> parsedExtensions = result.get(occurrenceId);
 
         // If the map is null we create new map for the extension
