@@ -22,7 +22,7 @@ jobs:
         run: make build-ci
 
       - name: Upload jar
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: package
           path: livingatlas/pipelines/target/pipelines-*-SNAPSHOT-shaded.jar
