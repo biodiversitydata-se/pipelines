@@ -114,19 +114,19 @@ la-pipelines interpret dr11 > /data/log/dr11/$(date +%y%m%d-%H%M%S).log 2>&1
 ```
 #### Load datasets using service
 `live-pipelines-1` runs a service that watches a queue and loads datasets added to the queue. The queue is a directory (`/data/service-queue`) and the queue items are empty files named as the dataset.
-The queue can be managed from scripts in [sbdi-install](https://github.com/biodiversitydata-se/sbdi-install).
+The queue can be managed from scripts in [sbdi-install](https://github.com/biodiversitydata-se/sbdi-install/blob/main/dataset-ingestor/).
 
 List queue:
 ```
-./utils/pipelines/load-queue.sh list
+./load-queue.sh list
 ```
 Add dataset to queue:
 ```
-./utils/pipelines/load-queue.sh add dr11
+./load-queue.sh add dr11
 ```
 Remove dataset from queue:
 ```
-./utils/pipelines/load-queue.sh rm dr11
+./load-queue.sh rm dr11
 ```
 
 #### Load multiple datasets (legacy)
